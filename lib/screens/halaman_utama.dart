@@ -72,7 +72,8 @@ class _RegisterPageState extends State<RegisterPage> {
     SharedPreferences pref = await SharedPreferences.getInstance();
     await pref.setString("nip", email);
     var response = await http.post(
-      Uri.parse('https://proumkm.madiunkota.go.id/api/proumkm/belanja/pegawai'),
+      Uri.parse(
+          'https://proumkm.madiunkota.go.id/api/proumkm/total/belanja/pegawai'),
 
       headers: {
         "passcode": "k0taPendekArr",

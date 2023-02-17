@@ -382,7 +382,7 @@ class _UploadPageState extends State<UploadPage> {
       debugPrint("response code: " + res.statusCode.toString());
       debugPrint("response: " + responseString.toString());
 
-      final Map<String, dynamic> dataDecode = jsonDecode(responseString);
+      final dataDecode = jsonDecode(responseString);
       debugPrint(dataDecode.toString());
 
       if (res.statusCode == 200) {
