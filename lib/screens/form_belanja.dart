@@ -39,7 +39,6 @@ class _UploadPageState extends State<UploadPage> {
   var txtFilePicker1 = TextEditingController();
   var txtFilePicker2 = TextEditingController();
   var txtFilePicker3 = TextEditingController();
-
   DateTime date = DateTime.now();
 
   File? filePickerVal1;
@@ -710,7 +709,6 @@ class _UploadPageState extends State<UploadPage> {
                 child: Text("Browse File", style: TextStyle(fontSize: 16.0)),
               ),
               buildFilePicker(),
-
               Container(
                 padding: const EdgeInsets.all(8.0),
                 margin: const EdgeInsets.only(bottom: 10),

@@ -26,11 +26,14 @@ bool FlutterWindow::OnCreate() {
   }
   RegisterPlugins(flutter_controller_->engine());
   SetChildContent(flutter_controller_->view()->GetNativeWindow());
+<<<<<<< HEAD
 
   flutter_controller_->engine()->SetNextFrameCallback([&]() {
     this->Show();
   });
 
+=======
+>>>>>>> de63020cf17c5461bcacb016b0930b6d85cc7ab8
   return true;
 }
 

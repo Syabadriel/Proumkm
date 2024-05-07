@@ -37,6 +37,7 @@
          </BuildableReference>
       </MacroExpansion>
       <Testables>
+<<<<<<< HEAD
          <TestableReference
             skipped = "NO"
             parallelizable = "YES">
@@ -48,6 +49,8 @@
                ReferencedContainer = "container:Runner.xcodeproj">
             </BuildableReference>
          </TestableReference>
+=======
+>>>>>>> de63020cf17c5461bcacb016b0930b6d85cc7ab8
       </Testables>
    </TestAction>
    <LaunchAction

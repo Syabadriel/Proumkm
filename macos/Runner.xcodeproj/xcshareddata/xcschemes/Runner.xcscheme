@@ -15,7 +15,11 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "33CC10EC2044A3C60003C045"
+<<<<<<< HEAD
                BuildableName = "proumkm.app"
+=======
+               BuildableName = "aplikasi_pertama.app"
+>>>>>>> de63020cf17c5461bcacb016b0930b6d85cc7ab8
                BlueprintName = "Runner"
                ReferencedContainer = "container:Runner.xcodeproj">
             </BuildableReference>
@@ -31,12 +35,17 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "33CC10EC2044A3C60003C045"
+<<<<<<< HEAD
             BuildableName = "proumkm.app"
+=======
+            BuildableName = "aplikasi_pertama.app"
+>>>>>>> de63020cf17c5461bcacb016b0930b6d85cc7ab8
             BlueprintName = "Runner"
             ReferencedContainer = "container:Runner.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <Testables>
+<<<<<<< HEAD
          <TestableReference
             skipped = "NO"
             parallelizable = "YES">
@@ -48,6 +57,8 @@
                ReferencedContainer = "container:Runner.xcodeproj">
             </BuildableReference>
          </TestableReference>
+=======
+>>>>>>> de63020cf17c5461bcacb016b0930b6d85cc7ab8
       </Testables>
    </TestAction>
    <LaunchAction
@@ -65,7 +76,11 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "33CC10EC2044A3C60003C045"
+<<<<<<< HEAD
             BuildableName = "proumkm.app"
+=======
+            BuildableName = "aplikasi_pertama.app"
+>>>>>>> de63020cf17c5461bcacb016b0930b6d85cc7ab8
             BlueprintName = "Runner"
             ReferencedContainer = "container:Runner.xcodeproj">
          </BuildableReference>
@@ -82,7 +97,11 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "33CC10EC2044A3C60003C045"
+<<<<<<< HEAD
             BuildableName = "proumkm.app"
+=======
+            BuildableName = "aplikasi_pertama.app"
+>>>>>>> de63020cf17c5461bcacb016b0930b6d85cc7ab8
             BlueprintName = "Runner"
             ReferencedContainer = "container:Runner.xcodeproj">
          </BuildableReference>
