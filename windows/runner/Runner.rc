@@ -90,21 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
-<<<<<<< HEAD
             VALUE "FileDescription", "proumkm" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "proumkm" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2023 com.example. All rights reserved." "\0"
             VALUE "OriginalFilename", "proumkm.exe" "\0"
             VALUE "ProductName", "proumkm" "\0"
-=======
-            VALUE "FileDescription", "aplikasi_pertama" "\0"
-            VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "aplikasi_pertama" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2023 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "aplikasi_pertama.exe" "\0"
-            VALUE "ProductName", "aplikasi_pertama" "\0"
->>>>>>> de63020cf17c5461bcacb016b0930b6d85cc7ab8
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

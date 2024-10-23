@@ -26,14 +26,16 @@ bool FlutterWindow::OnCreate() {
   }
   RegisterPlugins(flutter_controller_->engine());
   SetChildContent(flutter_controller_->view()->GetNativeWindow());
-<<<<<<< HEAD
 
   flutter_controller_->engine()->SetNextFrameCallback([&]() {
     this->Show();
   });
 
-=======
->>>>>>> de63020cf17c5461bcacb016b0930b6d85cc7ab8
+  // Flutter can complete the first frame before the "show window" callback is
+  // registered. The following call ensures a frame is pending to ensure the
+  // window is shown. It is a no-op if the first frame hasn't completed yet.
+  flutter_controller_->ForceRedraw();
+
   return true;
 }
 

@@ -1,10 +1,11 @@
 // ignore_for_file: file_names, prefer_const_constructors, prefer_const_literals_to_create_immutables, unnecessary_import, unused_import, unnecessary_const, unnecessary_string_interpolations
 
 import 'dart:ui';
-import 'package:proumkm/DataBelanja/postCard.dart';
-import 'package:proumkm/screens/halaman_utama.dart';
+
 import 'package:flutter/material.dart';
+import 'package:proumkm/DataBelanja/postCard.dart';
 import 'package:proumkm/DataBelanja/posts.dart';
+import 'package:proumkm/screens/halaman_utama.dart';
 
 class DetailPage extends StatelessWidget {
   // DetailPage({Key? key, required Posts posts}) : super(key: key);
@@ -13,6 +14,10 @@ class DetailPage extends StatelessWidget {
   const DetailPage({Key? key, required this.posts}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    double fontSize = screenWidth * 0.04;
     return Scaffold(
       appBar: AppBar(
         backgroundColor:
@@ -95,6 +100,9 @@ class DetailPage extends StatelessWidget {
                         ),
                         Text(
                           posts.nip,
+                          style: TextStyle(
+                            fontSize: fontSize,
+                          ),
                         ),
 
                         const Text(
@@ -105,6 +113,9 @@ class DetailPage extends StatelessWidget {
                         ),
                         Text(
                           posts.nama,
+                          style: TextStyle(
+                            fontSize: fontSize,
+                          ),
                         ),
                         // const SizedBox(
                         //   height: 5,
@@ -117,6 +128,9 @@ class DetailPage extends StatelessWidget {
                         ),
                         Text(
                           posts.rekap_belanja,
+                          style: TextStyle(
+                            fontSize: fontSize,
+                          ),
                         ),
 
                         const Text(
@@ -128,6 +142,9 @@ class DetailPage extends StatelessWidget {
 
                         Text(
                           'Rp. ${posts.jumlah_uang}',
+                          style: TextStyle(
+                            fontSize: fontSize,
+                          ),
                         ),
                         const SizedBox(
                           height: 20,

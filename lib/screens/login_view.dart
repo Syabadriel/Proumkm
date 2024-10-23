@@ -311,7 +311,7 @@ class _LoginPage extends State<LoginPage> {
       padding: const EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),
       child: ElevatedButton.icon(
         style: ElevatedButton.styleFrom(
-          primary: Color.fromARGB(255, 107, 28, 204),
+          backgroundColor: Color.fromARGB(255, 107, 28, 204),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20.0),
             side: const BorderSide(color: Colors.blue),
@@ -322,7 +322,11 @@ class _LoginPage extends State<LoginPage> {
         icon: const Icon(Icons.arrow_right_alt),
         label: const Text(
           "MASUK",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
       ),
     );

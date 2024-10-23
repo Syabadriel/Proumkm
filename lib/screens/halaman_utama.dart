@@ -1,25 +1,28 @@
 // ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors, prefer_const_literals_to_create_immutables, unused_local_variable, no_leading_underscores_for_local_identifiers, prefer_typing_uninitialized_variables, avoid_unnecessary_containers, non_constant_identifier_names, avoid_types_as_parameter_names, unused_import, duplicate_import, unnecessary_import, unused_field, avoid_print, must_call_super, unnecessary_string_interpolations, use_build_context_synchronously, unnecessary_brace_in_string_interps
 
-import 'dart:core';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:proumkm/screens/form_belanja.dart';
-import 'package:email_validator/email_validator.dart';
-import 'package:flutter/foundation.dart';
-import 'package:proumkm/constans.dart';
-import 'package:proumkm/DataBelanja/Home.dart';
-import 'package:proumkm/DataBelanja/posts.dart';
-import 'package:proumkm/DataBelanja/postCard.dart';
-import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
+import 'dart:core';
+
+import 'package:animated_card/animated_card.dart';
+import 'package:email_validator/email_validator.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:proumkm/DataBelanja/Home.dart';
+import 'package:proumkm/DataBelanja/postCard.dart';
+import 'package:proumkm/DataBelanja/posts.dart';
+import 'package:proumkm/apifolders/dialogs.dart';
+import 'package:proumkm/constans.dart';
+import 'package:proumkm/screens/form_belanja.dart';
 import 'package:proumkm/screens/halaman_utama.dart';
 import 'package:proumkm/screens/login_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:proumkm/apifolders/dialogs.dart';
+
 import 'coba.dart';
-import 'package:animated_card/animated_card.dart';
 
 class RegisterPage extends StatefulWidget {
   static const routeName = "/registerPage";
@@ -172,12 +175,7 @@ class _RegisterPageState extends State<RegisterPage> {
               Center(
                 child: Column(
                   children: <Widget>[
-                    // _appbar(),
                     _grupcard(context),
-                    // _cardtotal(),
-                    // _cardhariini(),
-                    // _cardmingguini(),
-                    // _cardbulanini(),
                     SizedBox(height: 15),
                     _tambah(context),
                     SizedBox(height: 15),
@@ -193,33 +191,20 @@ class _RegisterPageState extends State<RegisterPage> {
       floatingActionButton: Container(
         width: 120,
         height: 60,
-        decoration: BoxDecoration(
-          color: Color.fromRGBO(
-              0, 51, 102, 1), // Ubah warna latar belakang di sini
-          borderRadius: BorderRadius.circular(30),
-          boxShadow: [
-            BoxShadow(
-              color: const Color.fromARGB(91, 0, 0, 0).withOpacity(0.5),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: Offset(0, 5),
-            ),
-          ],
-        ),
         child: Stack(
           children: [
             Positioned.fill(
               child: Align(
                 alignment: Alignment.center,
                 child: FloatingActionButton.extended(
-                  backgroundColor: Color.fromRGBO(0, 51, 102, 1),
+                  backgroundColor: Color.fromARGB(255, 26, 179, 148),
                   foregroundColor: Colors.white,
                   onPressed: () {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => UploadPage()));
                     // Kode yang akan dijalankan saat tombol ditekan
                   },
-                  icon: Icon(Icons.camera_alt_outlined, size: 25),
+                  icon: Icon(Icons.shopping_cart_checkout_outlined, size: 25),
                   label: Text(
                     'Belanja',
                     style: TextStyle(fontSize: 20),
@@ -298,13 +283,19 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Widget _cardtotal() {
+    final formatCurrency = NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+      decimalDigits: 0,
+    );
+
     return Card(
       child: Container(
         padding: const EdgeInsets.all(10.0),
         width: 500,
         height: 80,
         decoration: BoxDecoration(
-          color: Colors.blue, // Ganti dengan warna yang diinginkan
+          color: Color.fromARGB(255, 190, 190, 190).withOpacity(0.8),
           borderRadius: BorderRadius.circular(8.0),
         ),
         child: Row(
@@ -321,12 +312,12 @@ class _RegisterPageState extends State<RegisterPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    "Rp. ${totalBelanja}",
+                    formatCurrency.format(
+                        int.tryParse(totalBelanja) ?? 0), // Ubah di sini
                     style: TextStyle(
                       fontSize: 25,
                       fontWeight: FontWeight.bold,
-                      color:
-                          Colors.white, // Ganti dengan warna teks yang sesuai
+                      color: Colors.white,
                     ),
                   ),
                   Text(
@@ -334,8 +325,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color:
-                          Colors.white, // Ganti dengan warna teks yang sesuai
+                      color: Colors.white,
                     ),
                   ),
                 ],
@@ -354,7 +344,8 @@ class _RegisterPageState extends State<RegisterPage> {
         width: 500,
         height: 80,
         decoration: BoxDecoration(
-          color: Colors.green, // Ganti dengan warna yang diinginkan
+          color: Color.fromARGB(255, 26, 179, 148)
+              .withOpacity(0.8), // Ganti dengan warna yang diinginkan
           borderRadius: BorderRadius.circular(8.0),
         ),
         child: Row(
@@ -403,7 +394,8 @@ class _RegisterPageState extends State<RegisterPage> {
         width: 500,
         height: 80,
         decoration: BoxDecoration(
-          color: Colors.orange, // Ganti dengan warna yang diinginkan
+          color: Color.fromARGB(255, 248, 172, 89)
+              .withOpacity(0.8), // Ganti dengan warna yang diinginkan
           borderRadius: BorderRadius.circular(8.0),
         ),
         child: Row(
@@ -452,7 +444,8 @@ class _RegisterPageState extends State<RegisterPage> {
         width: 500,
         height: 80,
         decoration: BoxDecoration(
-          color: Colors.red, // Ganti dengan warna yang diinginkan
+          color: Color.fromARGB(255, 35, 198, 200)
+              .withOpacity(0.8), // Ganti dengan warna yang diinginkan
           borderRadius: BorderRadius.circular(8.0),
         ),
         child: Row(
@@ -623,7 +616,8 @@ class _RegisterPageState extends State<RegisterPage> {
               children: <Widget>[
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    primary: Color.fromRGBO(0, 51, 102, 1),
+                    backgroundColor:
+                        Color.fromARGB(255, 26, 179, 148).withOpacity(0.6),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
@@ -641,16 +635,24 @@ class _RegisterPageState extends State<RegisterPage> {
                     children: [
                       Text(
                         "Detail Belanja",
-                        style: TextStyle(fontSize: 20),
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.white,
+                        ),
                       ),
                       SizedBox(width: 5),
-                      Icon(Icons.line_weight_sharp, size: 25),
+                      Icon(
+                        Icons.line_weight_sharp,
+                        size: 25,
+                        color: Colors.white,
+                      ),
                     ],
                   ),
                 ),
                 ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    primary: Color.fromRGBO(0, 51, 102, 1),
+                    backgroundColor:
+                        Color.fromARGB(255, 26, 179, 148).withOpacity(0.6),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
@@ -663,10 +665,14 @@ class _RegisterPageState extends State<RegisterPage> {
                   icon: Icon(
                     Icons.arrow_circle_right_outlined,
                     size: 25,
+                    color: Colors.white,
                   ),
                   label: Text(
                     'Keluar',
-                    style: TextStyle(fontSize: 20),
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ],

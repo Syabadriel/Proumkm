@@ -1,17 +1,19 @@
 // ignore_for_file: unused_import, prefer_const_constructors, deprecated_member_use, prefer_interpolation_to_compose_strings, prefer_const_literals_to_create_immutables, use_build_context_synchronously, unused_local_variable, non_constant_identifier_names, duplicate_ignore
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:async';
+
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:proumkm/DataBelanja/posts.dart';
 import 'package:proumkm/screens/halaman_utama.dart';
-import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
-import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:image_picker/image_picker.dart';
 
 class UploadPage extends StatefulWidget {
   const UploadPage({Key? key}) : super(key: key);
@@ -77,7 +79,7 @@ class _UploadPageState extends State<UploadPage> {
           const SizedBox(width: 5),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-                primary: Color.fromARGB(255, 0, 228, 224),
+                backgroundColor: Color.fromARGB(255, 0, 228, 224),
                 minimumSize: const Size(70, 48),
                 maximumSize: const Size(70, 48)),
             onPressed: () => pickDatePicker(context),
@@ -166,7 +168,7 @@ class _UploadPageState extends State<UploadPage> {
               selectFile1();
             },
             style: ElevatedButton.styleFrom(
-              primary: Color.fromARGB(255, 0, 228, 224),
+              backgroundColor: Color.fromARGB(255, 0, 228, 224),
               minimumSize: const Size(122, 48),
               maximumSize: const Size(122, 48),
               shape: RoundedRectangleBorder(
@@ -210,7 +212,7 @@ class _UploadPageState extends State<UploadPage> {
               selectFile2();
             },
             style: ElevatedButton.styleFrom(
-              primary: Color.fromARGB(255, 0, 228, 224),
+              backgroundColor: Color.fromARGB(255, 0, 228, 224),
               minimumSize: const Size(122, 48),
               maximumSize: const Size(122, 48),
               shape: RoundedRectangleBorder(
@@ -254,7 +256,7 @@ class _UploadPageState extends State<UploadPage> {
               selectFile3();
             },
             style: ElevatedButton.styleFrom(
-              primary: Color.fromARGB(255, 0, 228, 224),
+              backgroundColor: Color.fromARGB(255, 0, 228, 224),
               minimumSize: const Size(122, 48),
               maximumSize: const Size(122, 48),
               shape: RoundedRectangleBorder(
@@ -363,28 +365,6 @@ class _UploadPageState extends State<UploadPage> {
     );
   }
 
-  pickImageFromCamera(int fileNumber) async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.getImage(source: ImageSource.camera);
-
-    if (pickedFile != null) {
-      setState(() {
-        if (fileNumber == 1) {
-          txtFilePicker1.text = pickedFile.path;
-          filePickerVal1 = File(pickedFile.path);
-        } else if (fileNumber == 2) {
-          txtFilePicker2.text = pickedFile.path;
-          filePickerVal2 = File(pickedFile.path);
-        } else if (fileNumber == 3) {
-          txtFilePicker3.text = pickedFile.path;
-          filePickerVal3 = File(pickedFile.path);
-        }
-
-        _validateInputs(); // Memanggil fungsi _validateInputs setelah berhasil memilih file
-      });
-    }
-  }
-
   void _showLoadingDialog() {
     showDialog<void>(
       context: context,
@@ -413,6 +393,38 @@ class _UploadPageState extends State<UploadPage> {
     Navigator.of(context, rootNavigator: true).pop();
   }
 
+  pickImageFromCamera(int fileNumber) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.getImage(source: ImageSource.camera);
+
+    if (pickedFile != null) {
+      setState(() async {
+        // Mengompres gambar sebelum menyetel nilai filePickerVal
+        var compressedImage = await FlutterImageCompress.compressWithFile(
+          pickedFile.path,
+          minWidth: 800,
+          minHeight: 600,
+          quality: 60,
+        );
+
+        // Tampilkan detail ukuran dan kualitas gambar yang terkompres
+        print(
+            'File $fileNumber compressed. Original Size: ${File(pickedFile.path).lengthSync()} bytes, Compressed Size: ${compressedImage!.length} bytes, Quality: 60');
+
+        if (fileNumber == 1) {
+          txtFilePicker1.text = pickedFile.path;
+          filePickerVal1 = File(pickedFile.path);
+        } else if (fileNumber == 2) {
+          txtFilePicker2.text = pickedFile.path;
+          filePickerVal2 = File(pickedFile.path);
+        } else if (fileNumber == 3) {
+          txtFilePicker3.text = pickedFile.path;
+          filePickerVal3 = File(pickedFile.path);
+        }
+      });
+    }
+  }
+
   pickImageFromGallery(int fileNumber) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
@@ -420,7 +432,19 @@ class _UploadPageState extends State<UploadPage> {
     );
 
     if (result != null) {
-      setState(() {
+      setState(() async {
+        // Mengompres gambar sebelum menyetel nilai filePickerVal
+        var compressedImage = await FlutterImageCompress.compressWithFile(
+          result.files.single.path!,
+          minWidth: 800,
+          minHeight: 600,
+          quality: 50,
+        );
+
+        // Tampilkan detail ukuran dan kualitas gambar yang terkompres
+        print(
+            'File $fileNumber compressed. Original Size: ${File(result.files.single.path!).lengthSync()} bytes, Compressed Size: ${compressedImage!.length} bytes, Quality: 60');
+
         if (fileNumber == 1) {
           txtFilePicker1.text = result.files.single.name;
           filePickerVal1 = File(result.files.single.path!);
@@ -431,18 +455,25 @@ class _UploadPageState extends State<UploadPage> {
           txtFilePicker3.text = result.files.single.name;
           filePickerVal3 = File(result.files.single.path!);
         }
-
-        _validateInputs(); // Memanggil fungsi _validateInputs setelah berhasil memilih file
       });
     }
   }
 
-  void _validateInputs() {
+  // Panggil fungsi mengompres gambar sebelum memanggil simpan()
+  _validateInputs() {
     if (_formKey.currentState!.validate()) {
       //If all data are correct then save data to out variables
       _formKey.currentState!.save();
-      simpan();
+      // Memanggil fungsi mengompres gambar sebelum memanggil simpan()
+      compressImagesAndSave();
     }
+  }
+
+// Fungsi untuk mengompres gambar dan menyimpan
+  compressImagesAndSave() {
+    // Mengompres gambar sebelum memanggil simpan()
+    // Pastikan gambar sudah terkompres sebelum memanggil simpan()
+    simpan();
   }
 
   String email = "";
@@ -728,7 +759,7 @@ class _UploadPageState extends State<UploadPage> {
                           _validateInputs();
                         },
                   style: ElevatedButton.styleFrom(
-                    primary: Color.fromARGB(255, 0, 228, 224),
+                    backgroundColor: Color.fromARGB(255, 0, 228, 224),
                     minimumSize: const Size(115, 55),
                     maximumSize: const Size(115, 55),
                     shape: RoundedRectangleBorder(
@@ -756,7 +787,7 @@ class _UploadPageState extends State<UploadPage> {
                             builder: (context) => RegisterPage()));
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: Color.fromARGB(255, 255, 181, 21),
+                    backgroundColor: Color.fromARGB(255, 255, 181, 21),
                     minimumSize: const Size(115, 55),
                     maximumSize: const Size(115, 55),
                     shape: RoundedRectangleBorder(

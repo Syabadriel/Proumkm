@@ -1,8 +1,8 @@
 // ignore: file_names
 // ignore_for_file: file_names, duplicate_ignore, prefer_const_literals_to_create_immutables, unnecessary_const, prefer_const_constructors, sort_child_properties_last
 import 'package:flutter/material.dart';
-import 'package:proumkm/DataBelanja/posts.dart';
 import 'package:proumkm/DataBelanja/detailPage.dart';
+import 'package:proumkm/DataBelanja/posts.dart';
 
 class PostCard extends StatelessWidget {
   const PostCard({Key? key, required this.posts}) : super(key: key);
@@ -10,6 +10,10 @@ class PostCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    double fontSize = screenWidth * 0.03;
     return Padding(
       padding: EdgeInsets.zero,
       child: InkWell(
@@ -26,8 +30,8 @@ class PostCard extends StatelessWidget {
         child: Card(
           child: Container(
             padding: EdgeInsets.all(10),
-            width: 500,
-            height: 180,
+            width: screenWidth * 5,
+            height: screenHeight * 0.22,
             margin: EdgeInsets.symmetric(vertical: 1.0, horizontal: 1.0),
             decoration: BoxDecoration(
               color: Colors.grey[200], // Warna latar belakang yang kalem
@@ -47,7 +51,7 @@ class PostCard extends StatelessWidget {
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         'NIP:',

@@ -1,18 +1,19 @@
 // import 'package:proumkm/APIFOLDERS/operationAPI.dart';
 // ignore_for_file: unused_import, unnecessary_new
 
-import 'dart:io';
-import 'package:proumkm/DataBelanja/Home.dart';
-import 'package:proumkm/DataBelanja/postCard.dart';
-import 'package:flutter/material.dart';
-import 'package:proumkm/screens/login_view.dart';
-import 'package:proumkm/screens/halaman_utama.dart';
-import 'package:proumkm/DataBelanja/detailPage.dart';
-import 'package:proumkm/DataBelanja/posts.dart';
-import 'package:flutter/services.dart';
 import 'dart:convert';
+import 'dart:io';
+
 import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:proumkm/DataBelanja/Home.dart';
+import 'package:proumkm/DataBelanja/detailPage.dart';
+import 'package:proumkm/DataBelanja/postCard.dart';
+import 'package:proumkm/DataBelanja/posts.dart';
+import 'package:proumkm/screens/halaman_utama.dart';
+import 'package:proumkm/screens/login_view.dart';
 
 class MyHttpOverrides extends HttpOverrides {
   @override
@@ -28,9 +29,8 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   runApp(
-
-      MaterialApp(
-      debugShowCheckedModeBanner: true,
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'ProUMKM Kota Madiun',
       home: AnimatedSplashScreen(
         splash: 'assets/splash.gif',
@@ -42,7 +42,7 @@ void main() {
         // alignment: Alignment.topCenter,
         backgroundColor: Color.fromARGB(255, 255, 255, 255),
       ),
-        ),
+    ),
     // MaterialApp(
     //   debugShowCheckedModeBanner: false,
     //   title: "Pro-UMKM Kota Madiun",

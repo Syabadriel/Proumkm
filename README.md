@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 # proumkm
-=======
-# aplikasi_pertama
->>>>>>> de63020cf17c5461bcacb016b0930b6d85cc7ab8
 
 A new Flutter project.
 

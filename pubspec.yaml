@@ -1,31 +1,17 @@
-<<<<<<< HEAD
 name: proumkm
 description: Aplikasi untuk monitoring belanja pegawai ASN atau non ASN di Kota Madiun..
-=======
-name: aplikasi_pertama
-description: A new Flutter project.
->>>>>>> de63020cf17c5461bcacb016b0930b6d85cc7ab8
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.0+1
+version: 1.0.4+4
 
-<<<<<<< HEAD
-
-=======
->>>>>>> de63020cf17c5461bcacb016b0930b6d85cc7ab8
 environment:
   sdk: '>=2.18.6 <3.0.0'
 
 dependencies:
   flutter:
     sdk: flutter  
-<<<<<<< HEAD
-  # flutter_webview_plugin: ^0.3.11    
-=======
-
-    
->>>>>>> de63020cf17c5461bcacb016b0930b6d85cc7ab8
+  # flutter_webview_plugin: ^0.3.11
   cupertino_icons: ^1.0.2
   provider: ^6.0.5
   http: ^0.13.4
@@ -33,7 +19,6 @@ dependencies:
   font_awesome_flutter: ^10.1.0
   file_picker: ^5.2.5
   intl: ^0.18.0
-<<<<<<< HEAD
   webview_flutter: any
   webview_flutter_android: ^3.6.0
   flutter_webview_plugin: any
@@ -49,13 +34,8 @@ dependencies:
   flutter_flip_card: ^0.0.4
   animated_flip_card: ^1.0.2
   image_picker: ^0.8.8
+  flutter_image_compress: ^1.1.0
  
-=======
-  adaptivex: ^0.0.1+6
-  email_validator: ^2.1.17
-  validate: ^1.7.0
-
->>>>>>> de63020cf17c5461bcacb016b0930b6d85cc7ab8
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -65,11 +45,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-<<<<<<< HEAD
     - assets/icon_login.png
     - assets/splash.gif
     - assets/icon_register.png
-=======
-     - assets/
->>>>>>> de63020cf17c5461bcacb016b0930b6d85cc7ab8
  
