@@ -35,7 +35,10 @@ dependencies:
   animated_flip_card: ^1.0.2
   image_picker: ^0.8.8
   flutter_image_compress: ^1.1.0
- 
+  awesome_dialog: ^2.2.1
+  url_launcher: ^6.0.20
+  simple_animations: ^4.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -48,4 +51,4 @@ flutter:
     - assets/icon_login.png
     - assets/splash.gif
     - assets/icon_register.png
- 
+    - assets/noimage.png

@@ -293,7 +293,7 @@ class _RegisterPageState extends State<RegisterPage> {
       child: Container(
         padding: const EdgeInsets.all(10.0),
         width: 500,
-        height: 80,
+        height: 90,
         decoration: BoxDecoration(
           color: Color.fromARGB(255, 190, 190, 190).withOpacity(0.8),
           borderRadius: BorderRadius.circular(8.0),
@@ -342,7 +342,7 @@ class _RegisterPageState extends State<RegisterPage> {
       child: Container(
         padding: const EdgeInsets.all(10.0),
         width: 500,
-        height: 80,
+        height: 90,
         decoration: BoxDecoration(
           color: Color.fromARGB(255, 26, 179, 148)
               .withOpacity(0.8), // Ganti dengan warna yang diinginkan
@@ -392,7 +392,7 @@ class _RegisterPageState extends State<RegisterPage> {
       child: Container(
         padding: const EdgeInsets.all(10.0),
         width: 500,
-        height: 80,
+        height: 90,
         decoration: BoxDecoration(
           color: Color.fromARGB(255, 248, 172, 89)
               .withOpacity(0.8), // Ganti dengan warna yang diinginkan
@@ -442,7 +442,7 @@ class _RegisterPageState extends State<RegisterPage> {
       child: Container(
         padding: const EdgeInsets.all(10.0),
         width: 500,
-        height: 80,
+        height: 90,
         decoration: BoxDecoration(
           color: Color.fromARGB(255, 35, 198, 200)
               .withOpacity(0.8), // Ganti dengan warna yang diinginkan

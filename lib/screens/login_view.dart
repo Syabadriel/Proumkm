@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors_in_immutables, prefer_const_literals_to_create_immutables, prefer_const_constructors, no_leading_underscores_for_local_identifiers, use_build_context_synchronously
+// ignore_for_file: prefer_const_constructors_in_immutables, prefer_const_literals_to_create_immutables, prefer_const_constructors, no_leading_underscores_for_local_identifiers, use_build_context_synchronously, avoid_single_cascade_in_expression_statements
 
 import 'dart:convert';
 
@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:proumkm/apifolders/dialogs.dart';
 import 'package:proumkm/screens/halaman_utama.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
@@ -69,6 +70,7 @@ class _LoginPage extends State<LoginPage> {
                     inputPassword(),
                     const SizedBox(height: 5.0),
                     _buildButton(context),
+                    _buildTextButton(context),
                     // _textField(context),
                     // headerSection(),
                     // textSection(),
@@ -294,6 +296,87 @@ class _LoginPage extends State<LoginPage> {
       );
     }
   }
+// Fungsi untuk menampilkan dialog
+void showContactAdminDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: Row(
+          children: [
+            Icon(Icons.contact_mail, color: Colors.blue),
+            SizedBox(width: 10),
+            Text('Kontak Admin Kota', style: TextStyle(fontWeight: FontWeight.bold)),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Untuk mendapatkan NIP dan Password, silakan hubungi admin kota melalui email di bawah:',
+              style: TextStyle(fontSize: 16),
+            ),
+            SizedBox(height: 15),
+            Center(
+              child: GestureDetector(
+                onTap: () {
+                  launchEmailApp();
+                },
+                child: Text(
+                  'kominfo@madiunkota.go.id',
+                  style: TextStyle(
+                    color: Colors.blue,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+            Center(
+              child: Icon(
+                Icons.email_outlined,
+                color: Colors.blue,
+                size: 40,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          Center(
+            child: TextButton(
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.blue,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              ),
+              child: Text('OK', style: TextStyle(color: Colors.white, fontSize: 16)),
+              onPressed: () {
+                Navigator.of(context).pop(); // Menutup dialog
+              },
+            ),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+void launchEmailApp() async {
+  const email = 'mailto:kominfo@madiunkota.go.id';
+  if (await canLaunch(email)) {
+    await launch(email);
+  } else {
+    throw 'Could not launch $email';
+  }
+}
 
   @override
   void initState() {
@@ -331,4 +414,24 @@ class _LoginPage extends State<LoginPage> {
       ),
     );
   }
+
+  // Fungsi untuk widget TextButton
+Widget _buildTextButton(BuildContext context) {
+  return Container(
+    padding: const EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),
+    child: TextButton(
+      onPressed: () {
+        showContactAdminDialog(context);
+      },
+      child: const Text(
+        'Tidak punya akun? Hubungi Admin',
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Colors.black54,
+        ),
+      ),
+    ),
+  );
+}
+
 }
