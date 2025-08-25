@@ -290,8 +290,8 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
         child: BottomNavigationBar(
           backgroundColor: Colors.transparent,
-          selectedItemColor: Color(0xFF3629B7),
-          unselectedItemColor: Colors.grey,
+          selectedItemColor: Colors.blue,
+          unselectedItemColor: Colors.blue,
           elevation: 0,
           type: BottomNavigationBarType.fixed,
           items: const [
