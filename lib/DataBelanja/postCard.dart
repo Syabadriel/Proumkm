@@ -1,7 +1,11 @@
-// ignore_for_file: file_names, duplicate_ignore, prefer_const_literals_to_create_immutables, unnecessary_const, prefer_const_constructors, sort_child_properties_last
+// ignore_for_file: file_names, prefer_const_constructors, unnecessary_const
+
 import 'package:flutter/material.dart';
 import 'package:proumkm/DataBelanja/detailPage.dart';
 import 'package:proumkm/DataBelanja/posts.dart';
+import 'package:proumkm/screens/halaman_utama.dart';
+import 'package:proumkm/screens/form_belanja.dart';
+
 
 class PostCard extends StatelessWidget {
   const PostCard({Key? key, required this.posts}) : super(key: key);
@@ -9,127 +13,145 @@ class PostCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-
     return Padding(
-      padding: EdgeInsets.zero,
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: InkWell(
+        borderRadius: BorderRadius.circular(20),
         onTap: () {
+
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: ((context) {
-                return DetailPage(posts: posts);
-              }),
+              builder: (context) => DetailPage(posts: posts),
             ),
           );
         },
         child: Card(
-          child: Container(
-            padding: EdgeInsets.all(10),
-            margin: EdgeInsets.symmetric(vertical: 1.0, horizontal: 1.0),
-            decoration: BoxDecoration(
-              color: Colors.grey[200], 
-              borderRadius: BorderRadius.circular(10.0),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
-                  spreadRadius: 2,
-                  blurRadius: 5,
-                  offset: Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min, // Tinggi sesuai konten
-                    children: [
-                      Text(
-                        'NIP:',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Text(
-                        posts.nip,
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      Text(
-                        'Nama:',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Text(
-                        posts.nama,
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      Text(
-                        'Keterangan:',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Flexible(
-                        child: Text(
-                          posts.rekap_belanja,
-                          style: TextStyle(fontSize: 16),
-                          overflow: TextOverflow.visible,
-                        ),
-                      ),
-                      Text(
-                        'Nominal:',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Text(
-                        'Rp. ${posts.jumlah_uang}',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-  width: 120,
-  height: 120,
-  decoration: BoxDecoration(
-    borderRadius: BorderRadius.circular(10.0),
-  ),
-  child: ClipRRect(
-    borderRadius: BorderRadius.circular(10.0),
-    child: posts.foto1 != null && posts.foto1.isNotEmpty
-        ? Image.network(
-            posts.foto1,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              return Image.asset(
-                'assets/noimage.png', // Gambar placeholder
-                fit: BoxFit.cover,
-              );
-            },
-          )
-        : Image.asset(
-            'assets/noimage.png', // Gambar default jika URL null
-            fit: BoxFit.cover,
-          ),
-  ),
-),
-
-              ],
-            ),
-          ),
-          color: Colors.white,
+          elevation: 8,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Gambar di atas
+              ClipRRect(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                child: (posts.foto1.isNotEmpty)
+                    ? Image.network(
+                  posts.foto1,
+                  height: 160,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Image.asset(
+                      "assets/noimage.png",
+                      height: 160,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    );
+                  },
+                )
+                    : Image.asset(
+                  "assets/noimage.png",
+                  height: 160,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
+
+              // Konten teks
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // NIP & Nama
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "NIP: ${posts.nip}",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                posts.nama,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+
+
+                    SizedBox(height: 12),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(Icons.description, size: 20, color: Colors.grey[600]),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            posts.rekap_belanja,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.black87,
+                              height: 1.4,
+                            ),
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 12),
+
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.monetization_on, size: 20, color: Colors.green[700]),
+                            SizedBox(width: 8),
+                            Text(
+                              "Nominal",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        ),
+                        Text(
+                          "Rp. ${posts.jumlah_uang}",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.green[700],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),

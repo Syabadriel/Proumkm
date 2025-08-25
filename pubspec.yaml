@@ -14,16 +14,15 @@ dependencies:
   # flutter_webview_plugin: ^0.3.11
   cupertino_icons: ^1.0.2
   provider: ^6.0.5
-  http: ^0.13.4
+  http: ^1.4.0
   shared_preferences: ^2.0.11
   font_awesome_flutter: ^10.1.0
-  file_picker: ^5.2.5
-  intl: ^0.18.0
-  webview_flutter: any
-  webview_flutter_android: ^3.6.0
-  flutter_webview_plugin: any
+  file_picker: ^10.2.1
+  intl: ^0.20.2
+  webview_flutter: ^4.8.0
+  webview_flutter_android: ^4.8.2
   adaptivex: ^0.0.1+6
-  email_validator: ^2.1.17
+  email_validator: ^3.0.0
   # validate: any
   table_calendar: ^3.0.6
   dotted_decoration: ^2.0.0
@@ -33,22 +32,24 @@ dependencies:
   animated_card: ^2.0.0
   flutter_flip_card: ^0.0.4
   animated_flip_card: ^1.0.2
-  image_picker: ^0.8.8
-  flutter_image_compress: ^1.1.0
-  awesome_dialog: ^2.2.1
+  image_picker: ^1.1.2
+  flutter_image_compress: ^2.4.0
+  awesome_dialog: ^3.2.1
   url_launcher: ^6.0.20
-  simple_animations: ^4.1.0
+  simple_animations: ^5.2.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^2.0.0
+  flutter_lints: ^6.0.0
 
 flutter:
   uses-material-design: true
   assets:
     - assets/icon_login.png
+    - assets/icon_login_putih.png
+    - assets/icon_login_polos.png
     - assets/splash.gif
     - assets/icon_register.png
     - assets/noimage.png

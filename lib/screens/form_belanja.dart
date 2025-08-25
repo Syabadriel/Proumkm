@@ -1,4 +1,4 @@
-// ignore_for_file: unused_import, prefer_const_constructors, deprecated_member_use, prefer_interpolation_to_compose_strings, prefer_const_literals_to_create_immutables, use_build_context_synchronously, unused_local_variable, non_constant_identifier_names, duplicate_ignore
+// ignore_for_file: unused_import, prefer_const_constructors, deprecated_member_use, prefer_interpolation_to_compose_strings, prefer_const_literals_to_create_immutables, use_build_context_synchronously, unused_local_variable, non_constant_identifier_names
 
 import 'dart:async';
 import 'dart:convert';
@@ -11,7 +11,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:proumkm/DataBelanja/Home.dart';
 import 'package:proumkm/DataBelanja/posts.dart';
+import 'package:proumkm/screens/form_belanja.dart';
 import 'package:proumkm/screens/halaman_utama.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -24,782 +26,326 @@ class UploadPage extends StatefulWidget {
 
 class _UploadPageState extends State<UploadPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  String txtRekap = "";
-  String txtJumlah = "";
-  // String txtToko = "";
-  String txtTgl = "";
+  final TextEditingController _rekapController = TextEditingController();
+  final TextEditingController _jumlahController = TextEditingController();
+  final TextEditingController _tanggalController = TextEditingController();
 
-  bool isFilePicker1Selected = false;
-  bool isFilePicker2Selected = false;
-  bool isFilePicker3Selected = false;
-  bool isLoading = false;
-
-  // var txtEditToko = TextEditingController();
-  var txtEditJumlah = TextEditingController();
-  var txtEditRekap = TextEditingController();
-  var txtDate = TextEditingController();
-  var txtFilePicker1 = TextEditingController();
-  var txtFilePicker2 = TextEditingController();
-  var txtFilePicker3 = TextEditingController();
-  DateTime date = DateTime.now();
-
-  File? filePickerVal1;
-  File? filePickerVal2;
-  File? filePickerVal3;
-
-  Widget buildDatePicker(context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextFormField(
-                readOnly: true,
-                controller: txtDate,
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Tanggal harus diisi';
-                  } else {
-                    return null;
-                  }
-                },
-                decoration: const InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(5.0),
-                      ),
-                      borderSide: BorderSide(color: Colors.white, width: 2)),
-                  hintText: 'Tanggal File',
-                  contentPadding: EdgeInsets.all(10.0),
-                ),
-                style: const TextStyle(fontSize: 16.0)),
-          ),
-          const SizedBox(width: 5),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-                backgroundColor: Color.fromARGB(255, 0, 228, 224),
-                minimumSize: const Size(70, 48),
-                maximumSize: const Size(70, 48)),
-            onPressed: () => pickDatePicker(context),
-            child: const FaIcon(
-              FontAwesomeIcons.calendarDay,
-              color: Colors.white,
-              size: 24.0,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future pickDatePicker(BuildContext context) async {
-    final newDatePicker = await showDatePicker(
-        context: context,
-        firstDate: DateTime(DateTime.now().year),
-        lastDate: DateTime(DateTime.now().year + 5),
-        initialDate: date,
-        builder: (context, child) {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Align(
-                alignment: Alignment.center,
-                child: ConstrainedBox(
-                  constraints:
-                      const BoxConstraints(maxWidth: 400.0, maxHeight: 520.0),
-                  child: child,
-                ),
-              )
-            ],
-          );
-        });
-
-    if (newDatePicker == null) return;
-
-    setState(() {
-      //
-      String rawDate = newDatePicker.toString();
-      var explode = rawDate.split(" ");
-      String waktu = convertDateFromString(explode[0]).toString();
-      txtDate.text = waktu;
-    });
-  }
-
-  Widget buildFilePicker() {
-    return Padding(
-      padding: const EdgeInsets.all(8),
-      child: Column(
-        children: [
-          TextFormField(
-            readOnly: true,
-            validator: (String? value) {
-              if (value == null || value.isEmpty) {
-                return 'File harus diupload';
-              } else {
-                return null;
-              }
-            },
-            controller: txtFilePicker1,
-            decoration: const InputDecoration(
-              filled: true,
-              fillColor: Colors.white,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(5.0),
-                ),
-                borderSide: BorderSide(color: Colors.white, width: 2),
-              ),
-              hintText: 'Upload File 1',
-              contentPadding: EdgeInsets.all(10.0),
-            ),
-            style: const TextStyle(fontSize: 16.0),
-          ),
-          const SizedBox(width: 5),
-          ElevatedButton.icon(
-            icon: const Icon(
-              Icons.upload_file,
-              color: Colors.white,
-              size: 24.0,
-            ),
-            label: const Text('Pilih File', style: TextStyle(fontSize: 16.0)),
-            onPressed: () {
-              selectFile1();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color.fromARGB(255, 0, 228, 224),
-              minimumSize: const Size(122, 48),
-              maximumSize: const Size(122, 48),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5.0),
-              ),
-            ),
-          ),
-          TextFormField(
-            readOnly: true,
-            validator: (String? value) {
-              if (value == null || value.isEmpty) {
-                return 'File harus diupload';
-              } else {
-                return null;
-              }
-            },
-            controller: txtFilePicker2,
-            decoration: const InputDecoration(
-              filled: true,
-              fillColor: Colors.white,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(5.0),
-                ),
-                borderSide: BorderSide(color: Colors.white, width: 2),
-              ),
-              hintText: 'Upload File 2',
-              contentPadding: EdgeInsets.all(10.0),
-            ),
-            style: const TextStyle(fontSize: 16.0),
-          ),
-          const SizedBox(width: 5),
-          ElevatedButton.icon(
-            icon: const Icon(
-              Icons.upload_file,
-              color: Colors.white,
-              size: 24.0,
-            ),
-            label: const Text('Pilih File', style: TextStyle(fontSize: 16.0)),
-            onPressed: () {
-              selectFile2();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color.fromARGB(255, 0, 228, 224),
-              minimumSize: const Size(122, 48),
-              maximumSize: const Size(122, 48),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5.0),
-              ),
-            ),
-          ),
-          TextFormField(
-            readOnly: true,
-            validator: (String? value) {
-              if (value == null || value.isEmpty) {
-                return 'File harus diupload';
-              } else {
-                return null;
-              }
-            },
-            controller: txtFilePicker3,
-            decoration: const InputDecoration(
-              filled: true,
-              fillColor: Colors.white,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(5.0),
-                ),
-                borderSide: BorderSide(color: Colors.white, width: 2),
-              ),
-              hintText: 'Upload File 3',
-              contentPadding: EdgeInsets.all(10.0),
-            ),
-            style: const TextStyle(fontSize: 16.0),
-          ),
-          const SizedBox(width: 5),
-          ElevatedButton.icon(
-            icon: const Icon(
-              Icons.upload_file,
-              color: Colors.white,
-              size: 24.0,
-            ),
-            label: const Text('Pilih File', style: TextStyle(fontSize: 16.0)),
-            onPressed: () {
-              selectFile3();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color.fromARGB(255, 0, 228, 224),
-              minimumSize: const Size(122, 48),
-              maximumSize: const Size(122, 48),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5.0),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  selectFile1() async {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Pilih Media'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                GestureDetector(
-                  child: Text('Kamera'),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    pickImageFromCamera(1);
-                  },
-                ),
-                SizedBox(height: 35),
-                GestureDetector(
-                  child: Text('Galeri'),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    pickImageFromGallery(1);
-                  },
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  selectFile2() async {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Pilih Media'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                GestureDetector(
-                  child: Text('Kamera'),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    pickImageFromCamera(2);
-                  },
-                ),
-                SizedBox(height: 35),
-                GestureDetector(
-                  child: Text('Galeri'),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    pickImageFromGallery(2);
-                  },
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  selectFile3() async {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Pilih Media'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                GestureDetector(
-                  child: Text('Kamera'),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    pickImageFromCamera(3);
-                  },
-                ),
-                SizedBox(height: 35),
-                GestureDetector(
-                  child: Text('Galeri'),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    pickImageFromGallery(3);
-                  },
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void _showLoadingDialog() {
-    showDialog<void>(
-      context: context,
-      barrierDismissible:
-          false, // Tidak bisa menutup popup dengan mengklik area luar
-      builder: (BuildContext context) {
-        return WillPopScope(
-          // Mencegah pengguna menutup popup dengan mengklik tombol back
-          onWillPop: () async => false,
-          child: AlertDialog(
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: const [
-                CircularProgressIndicator(),
-                SizedBox(height: 16.0),
-                Text('Mengupload data...'),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void _hideLoadingDialog() {
-    Navigator.of(context, rootNavigator: true).pop();
-  }
-
-  pickImageFromCamera(int fileNumber) async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.getImage(source: ImageSource.camera);
-
-    if (pickedFile != null) {
-      setState(() async {
-        // Mengompres gambar sebelum menyetel nilai filePickerVal
-        var compressedImage = await FlutterImageCompress.compressWithFile(
-          pickedFile.path,
-          minWidth: 800,
-          minHeight: 600,
-          quality: 60,
-        );
-
-        // Tampilkan detail ukuran dan kualitas gambar yang terkompres
-        print(
-            'File $fileNumber compressed. Original Size: ${File(pickedFile.path).lengthSync()} bytes, Compressed Size: ${compressedImage!.length} bytes, Quality: 60');
-
-        if (fileNumber == 1) {
-          txtFilePicker1.text = pickedFile.path;
-          filePickerVal1 = File(pickedFile.path);
-        } else if (fileNumber == 2) {
-          txtFilePicker2.text = pickedFile.path;
-          filePickerVal2 = File(pickedFile.path);
-        } else if (fileNumber == 3) {
-          txtFilePicker3.text = pickedFile.path;
-          filePickerVal3 = File(pickedFile.path);
-        }
-      });
-    }
-  }
-
-  pickImageFromGallery(int fileNumber) async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['jpg'],
-    );
-
-    if (result != null) {
-      setState(() async {
-        // Mengompres gambar sebelum menyetel nilai filePickerVal
-        var compressedImage = await FlutterImageCompress.compressWithFile(
-          result.files.single.path!,
-          minWidth: 800,
-          minHeight: 600,
-          quality: 50,
-        );
-
-        // Tampilkan detail ukuran dan kualitas gambar yang terkompres
-        print(
-            'File $fileNumber compressed. Original Size: ${File(result.files.single.path!).lengthSync()} bytes, Compressed Size: ${compressedImage!.length} bytes, Quality: 60');
-
-        if (fileNumber == 1) {
-          txtFilePicker1.text = result.files.single.name;
-          filePickerVal1 = File(result.files.single.path!);
-        } else if (fileNumber == 2) {
-          txtFilePicker2.text = result.files.single.name;
-          filePickerVal2 = File(result.files.single.path!);
-        } else if (fileNumber == 3) {
-          txtFilePicker3.text = result.files.single.name;
-          filePickerVal3 = File(result.files.single.path!);
-        }
-      });
-    }
-  }
-
-  // Panggil fungsi mengompres gambar sebelum memanggil simpan()
-  _validateInputs() {
-    if (_formKey.currentState!.validate()) {
-      //If all data are correct then save data to out variables
-      _formKey.currentState!.save();
-      // Memanggil fungsi mengompres gambar sebelum memanggil simpan()
-      compressImagesAndSave();
-    }
-  }
-
-// Fungsi untuk mengompres gambar dan menyimpan
-  compressImagesAndSave() {
-    // Mengompres gambar sebelum memanggil simpan()
-    // Pastikan gambar sudah terkompres sebelum memanggil simpan()
-    simpan();
-  }
-
-  String email = "";
-  getPref() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    var islogin = pref.getBool("is_login");
-    if (islogin != null && islogin == true) {
-      setState(() {
-        email = pref.getString("email")!;
-      });
-    }
-  }
-
-  simpan() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    await pref.setString("nip", email);
-
-    // ignore: non_constant_identifier_names
-    final String rekap_belanja = txtEditRekap.text; //txtNama;
-    final String jumlah_uang = txtEditJumlah.text;
-    var rawTgl = txtDate.text.split("-");
-    var yM = rawTgl[0];
-    var mM = rawTgl[1];
-    var dM = rawTgl[2];
-    final String waktu = yM + "-" + mM + "-" + dM;
-    // final String updated_at = yM + "-" + mM + "-" + dM;
-    // final String created_at = yM + "-" + mM + "-" + dM;
-
-    try {
-      _showLoadingDialog();
-      // setState(() {
-      //   isLoading = true; // Set isLoading ke true saat proses dimulai
-      // });
-      //post date
-      Map<String, String> headers = {
-        "passcode": "k0taPendekArr",
-      };
-      Map<String, String> body = {
-        "nip": email,
-      };
-      var request = http.MultipartRequest(
-          'POST',
-          Uri.parse(
-              'https://proumkm.madiunkota.go.id/api/proumkm/belanja/store'));
-
-      request.headers.addAll(headers);
-      request.fields['nip'] = email;
-      request.fields['rekap_belanja'] = rekap_belanja;
-      request.fields['jumlah_uang'] = jumlah_uang;
-      request.fields['tanggal'] = waktu;
-
-      request.files.add(http.MultipartFile(
-          'foto1',
-          filePickerVal1!.readAsBytes().asStream(),
-          filePickerVal1!.lengthSync(),
-          filename: filePickerVal1!.path.split("/").last));
-
-      request.files.add(http.MultipartFile(
-          'foto2',
-          filePickerVal2!.readAsBytes().asStream(),
-          filePickerVal2!.lengthSync(),
-          filename: filePickerVal2!.path.split("/").last));
-
-      request.files.add(http.MultipartFile(
-          'foto3',
-          filePickerVal3!.readAsBytes().asStream(),
-          filePickerVal3!.lengthSync(),
-          filename: filePickerVal3!.path.split("/").last));
-
-      var res = await request.send();
-      var responseBytes = await res.stream.toBytes();
-      var responseString = utf8.decode(responseBytes);
-
-      //debug
-      debugPrint("response code: " + res.statusCode.toString());
-      debugPrint("response: " + responseString.toString());
-      var encodeFirst = json.encode(responseString);
-
-      var dataDecode = json.decode(encodeFirst);
-      debugPrint(dataDecode.toString());
-
-      if (res.statusCode == 200) {
-        _hideLoadingDialog();
-        return showDialog<void>(
-          context: context,
-          barrierDismissible: false, // user must tap button!
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Informasi'),
-              content: SingleChildScrollView(
-                child: ListBody(
-                  children: const <Widget>[
-                    Text("File berhasil diupload"),
-                  ],
-                ),
-              ),
-              actions: [
-                TextButton(
-                  child: const Text('OK'),
-                  onPressed: () {
-                    //
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => RegisterPage()));
-                  },
-                ),
-              ],
-            );
-          },
-        );
-      } else {
-        _hideLoadingDialog();
-      }
-    } catch (e) {
-      _hideLoadingDialog();
-      debugPrint('$e');
-    } finally {
-      setState(() {
-        isLoading =
-            false; // Set isLoading ke false setelah proses selesai, baik sukses atau gagal
-      });
-    }
-  }
-
-  convertDateFromString(String strDate) {
-    DateTime date = DateTime.parse(strDate);
-    return DateFormat("yyyy-MM-dd").format(date);
-  }
+  File? _selectedFile;
+  bool _isLoading = false;
+  String _userEmail = "";
+  final DateTime _currentDate = DateTime.now();
 
   @override
   void initState() {
-    getPref();
     super.initState();
+    _loadUserData();
   }
 
-  @override
-  dispose() {
-    super.dispose();
+  // Mengambil data user dari shared preferences
+  void _loadUserData() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    setState(() {
+      _userEmail = pref.getString("email") ?? "";
+    });
+  }
+
+  // Fungsi untuk menampilkan date picker
+  Future<void> _pickDate(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: _currentDate,
+      firstDate: DateTime(_currentDate.year),
+      lastDate: DateTime(_currentDate.year + 5),
+    );
+    if (pickedDate != null) {
+      setState(() {
+        _tanggalController.text = DateFormat("dd-MM-yyyy").format(pickedDate);
+      });
+    }
+  }
+
+  // Fungsi untuk memilih file gambar
+  Future<void> _selectFile() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['jpg', 'png'],
+    );
+    if (result != null) {
+      setState(() {
+        _selectedFile = File(result.files.single.path!);
+      });
+    }
+  }
+
+  // Fungsi untuk memvalidasi dan menyimpan data
+  void _validateAndSave() {
+    if (_formKey.currentState!.validate()) {
+      if (_selectedFile == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("File bukti belanja harus dipilih.")),
+        );
+        return;
+      }
+      _saveData();
+    }
+  }
+
+  // Fungsi untuk mengirim data ke API
+  Future<void> _saveData() async {
+    setState(() => _isLoading = true);
+
+    final String rekapBelanja = _rekapController.text;
+    final String jumlahUang = _jumlahController.text;
+    final String tanggal = DateFormat("yyyy-MM-dd").format(
+      DateFormat("dd-MM-yyyy").parse(_tanggalController.text),
+    );
+
+    try {
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('https://proumkm.madiunkota.go.id/api/proumkm/belanja/store'),
+      );
+
+      request.headers['passcode'] = 'k0taPendekArr';
+      request.fields.addAll({
+        'nip': _userEmail,
+        'rekap_belanja': rekapBelanja,
+        'jumlah_uang': jumlahUang,
+        'tanggal': tanggal,
+      });
+
+      if (_selectedFile != null) {
+        request.files.add(await http.MultipartFile.fromPath('foto1', _selectedFile!.path));
+      }
+
+      final response = await request.send();
+      final responseBody = await response.stream.bytesToString();
+
+      debugPrint("API Response: $responseBody");
+
+      if (response.statusCode == 200) {
+        _showSnackBar("Data berhasil diunggah!", success: true);
+        _resetForm();
+      } else {
+        _showSnackBar("Gagal mengunggah data. Silakan coba lagi.");
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      _showSnackBar("Terjadi kesalahan: $e");
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  void _showSnackBar(String message, {bool success = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: success ? Colors.green : Colors.red,
+      ),
+    );
+  }
+
+  void _resetForm() {
+    _rekapController.clear();
+    _jumlahController.clear();
+    _tanggalController.clear();
+    setState(() {
+      _selectedFile = null;
+    });
+  }
+
+  Widget _buildDatePickerField() {
+    return Row(
+      children: [
+        Expanded(
+          child: TextFormField(
+            controller: _tanggalController,
+            readOnly: true,
+            decoration: InputDecoration(
+              hintText: "DD-MM-YYYY",
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+            ),
+            validator: (value) => value == null || value.isEmpty ? 'Tanggal harus diisi.' : null,
+          ),
+        ),
+        SizedBox(width: 8),
+        ElevatedButton(
+          onPressed: () => _pickDate(context),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            minimumSize: Size(50, 48),
+          ),
+          child: Icon(Icons.calendar_today, color: Colors.white),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFilePicker() {
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.blue.shade200),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        children: [
+          Text("Pilih file bukti belanja", style: TextStyle(color: Colors.grey.shade700)),
+          SizedBox(height: 8),
+          ElevatedButton.icon(
+            onPressed: _selectFile,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            icon: Icon(Icons.attach_file, color: Colors.white),
+            label: Text("Pilih File", style: TextStyle(color: Colors.white)),
+          ),
+          SizedBox(height: 8),
+          if (_selectedFile != null)
+            Text(
+              "File terpilih: ${_selectedFile!.path.split('/').last}",
+              style: TextStyle(color: Colors.black54, fontStyle: FontStyle.italic),
+              textAlign: TextAlign.center,
+            ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor:
-            Colors.blueGrey[100], // Warna latar belakang yang kalem
-        elevation: 0, // Menghilangkan bayangan di bawah AppBar
         title: Text(
-          'Tambah Data Belanja',
-          style: TextStyle(
-            color: Colors.black, // Warna teks judul
-            fontSize: 20, // Ukuran teks judul
-            fontWeight: FontWeight.bold,
-          ),
+          "Tambah Data Belanja",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
+        backgroundColor: Color(0xFF3629B7),
         centerTitle: true,
+        elevation: 0,
         leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_outlined, // Icon untuk menu navigasi
-            color: Colors.black, // Warna ikon
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-            // Aksi ketika ikon menu diklik
-          },
+          icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
         ),
-        actions: [],
       ),
-
-// FORM NAMA BARANG
       body: Form(
         key: _formKey,
-        child: Container(
-          decoration: BoxDecoration(
-              gradient: LinearGradient(
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-            colors: [
-              Color.fromARGB(255, 255, 255, 255),
-              Colors.white,
-            ],
-          )),
-          child: ListView(
-            children: <Widget>[
-              const Padding(
-                padding: EdgeInsets.all(5.0),
-                child: Text("Keterangan Belanja",
-                    style: TextStyle(fontSize: 16.0)),
+        child: ListView(
+          padding: EdgeInsets.all(16),
+          children: [
+            _buildInputField(
+              controller: _rekapController,
+              label: "Keterangan Belanja",
+              hint: "Nama Barang, Nama Toko, Nama Penjual, Lokasi",
+            ),
+            SizedBox(height: 16),
+            _buildInputField(
+              controller: _jumlahController,
+              label: "Harga Barang",
+              hint: "Harga Barang",
+              keyboardType: TextInputType.number,
+            ),
+            SizedBox(height: 16),
+            Text(
+              "Tanggal Belanja",
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey.shade800),
+            ),
+            SizedBox(height: 4),
+            _buildDatePickerField(),
+            SizedBox(height: 16),
+            Text(
+              "Tambahkan File Bukti",
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey.shade800),
+            ),
+            SizedBox(height: 4),
+            _buildFilePicker(),
+            SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: _isLoading ? null : _validateAndSave,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: _isLoading ? Colors.blue.shade200 : Colors.blue,
+                minimumSize: Size(double.infinity, 50),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                elevation: 3,
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                    key: Key(txtRekap),
-                    validator: (String? value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Nama barang harus diisi';
-                      } else {
-                        return null;
-                      }
-                    },
-                    controller: txtEditRekap,
-                    onSaved: (String? val) {
-                      txtEditRekap.text = val!;
-                    },
-                    decoration: const InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(5.0),
-                          ),
-                          borderSide:
-                              BorderSide(color: Colors.white, width: 2)),
-                      hintText:
-                          "Nama belanja'an, Nama toko, Nama Penjual, Lokasi Belanja",
-                      contentPadding: EdgeInsets.all(10.0),
-                    ),
-                    style: const TextStyle(fontSize: 16.0)),
+              child: _isLoading
+                  ? CircularProgressIndicator(color: Colors.white)
+                  : Text(
+                "Simpan",
+                style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
               ),
-              const Padding(
-                padding: EdgeInsets.all(5.0),
-                child: Text("Harga Barang", style: TextStyle(fontSize: 16.0)),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                    key: Key(txtJumlah),
-                    validator: (String? value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Harga barang harus diisi';
-                      } else {
-                        return null;
-                      }
-                    },
-                    controller: txtEditJumlah,
-                    onSaved: (String? val) {
-                      txtEditJumlah.text = val!;
-                    },
-                    decoration: const InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(5.0),
-                          ),
-                          borderSide:
-                              BorderSide(color: Colors.white, width: 2)),
-                      hintText: 'Harga barang',
-                      contentPadding: EdgeInsets.all(10.0),
-                    ),
-                    style: const TextStyle(fontSize: 16.0)),
-              ),
-// FORM NAMA BARANG SAMPE SINI
-              const Padding(
-                padding: EdgeInsets.all(5.0),
-                child:
-                    Text("Tanggal belanja", style: TextStyle(fontSize: 16.0)),
-              ),
-
-              buildDatePicker(context),
-              const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text("Browse File", style: TextStyle(fontSize: 16.0)),
-              ),
-              buildFilePicker(),
-              Container(
-                padding: const EdgeInsets.all(8.0),
-                margin: const EdgeInsets.only(bottom: 10),
-                child: ElevatedButton.icon(
-                  icon: const Icon(
-                    Icons.save,
-                    color: Colors.white,
-                    size: 32.0,
-                  ),
-                  label: const Text('SIMPAN', style: TextStyle(fontSize: 18.0)),
-                  onPressed: isLoading
-                      ? null
-                      : () {
-                          setState(() {
-                            isLoading = true;
-                          });
-                          _validateInputs();
-                        },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromARGB(255, 0, 228, 224),
-                    minimumSize: const Size(115, 55),
-                    maximumSize: const Size(115, 55),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
-                  ),
-                ),
-              ),
-
-              Container(
-                padding: const EdgeInsets.all(8.0),
-                margin: const EdgeInsets.only(bottom: 10),
-                child: ElevatedButton.icon(
-                  icon: const Icon(
-                    Icons.keyboard_backspace,
-                    color: Colors.white,
-                    size: 32.0,
-                  ),
-                  label:
-                      const Text('Kembali', style: TextStyle(fontSize: 18.0)),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => RegisterPage()));
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromARGB(255, 255, 181, 21),
-                    minimumSize: const Size(115, 55),
-                    maximumSize: const Size(115, 55),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.blue,
+        type: BottomNavigationBarType.fixed,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.arrow_back),
+            label: "Kembali",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: "Home",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list_alt),
+            label: "Detail Belanja",
+          ),
+        ],
+        onTap: (index) {
+          if (index == 0) {
+            Navigator.pop(context);
+          } else if (index == 1) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => RegisterPage()),
+            );
+          } else if (index == 2) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => Home()),
+            );
+          }
+        },
+      ),
+    );
+  }
+
+  Widget _buildInputField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey.shade800),
+        ),
+        SizedBox(height: 4),
+        TextFormField(
+          controller: controller,
+          keyboardType: keyboardType,
+          validator: (value) => value == null || value.isEmpty ? '$label harus diisi.' : null,
+          decoration: InputDecoration(
+            hintText: hint,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+          ),
+        ),
+      ],
     );
   }
 }

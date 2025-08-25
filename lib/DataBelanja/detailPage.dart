@@ -1,233 +1,262 @@
-// ignore_for_file: file_names, prefer_const_constructors, prefer_const_literals_to_create_immutables, unnecessary_import, unused_import, unnecessary_const, unnecessary_string_interpolations
-
-import 'dart:ui';
+// ignore_for_file: file_names, prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
-import 'package:proumkm/DataBelanja/postCard.dart';
 import 'package:proumkm/DataBelanja/posts.dart';
+import 'package:proumkm/screens/form_belanja.dart';
 import 'package:proumkm/screens/halaman_utama.dart';
 
 class DetailPage extends StatelessWidget {
-  // DetailPage({Key? key, required Posts posts}) : super(key: key);
-
   final Posts posts;
   const DetailPage({Key? key, required this.posts}) : super(key: key);
+
+  void _showPhotoDialog(BuildContext context) {
+    List<String> photos = [];
+    if (posts.foto1.isNotEmpty) photos.add(posts.foto1);
+    if (posts.foto2.isNotEmpty) photos.add(posts.foto2);
+    if (posts.foto3.isNotEmpty) photos.add(posts.foto3);
+
+    if (photos.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Tidak ada foto bukti belanja."),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+          child: Stack(
+            alignment: Alignment.topRight,
+            children: [
+              PageView.builder(
+                itemCount: photos.length,
+                itemBuilder: (context, index) {
+                  return ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Image.network(
+                      photos[index],
+                      fit: BoxFit.contain,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Center(
+                          child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                loadingProgress.expectedTotalBytes!
+                                : null,
+                            color: Colors.white,
+                          ),
+                        );
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: Colors.grey.shade300,
+                          child: Center(
+                            child: Icon(Icons.broken_image, size: 50, color: Colors.grey),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: IconButton(
+                  icon: Icon(Icons.close_rounded, color: Colors.white, size: 30),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
     final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
     double fontSize = screenWidth * 0.04;
+
     return Scaffold(
+      backgroundColor: Color(0xFFF5F5FF),
       appBar: AppBar(
-        backgroundColor:
-            Colors.blueGrey[100], // Warna latar belakang yang kalem
-        elevation: 0, // Menghilangkan bayangan di bawah AppBar
         title: Text(
-          'Detail Belanja',
+          "Detail Belanja",
           style: TextStyle(
-            color: Colors.black, // Warna teks judul
-            fontSize: 20, // Ukuran teks judul
+            color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
         ),
+        backgroundColor: Color(0xFF3629B7),
+        elevation: 0,
         centerTitle: true,
         leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_outlined, // Icon untuk menu navigasi
-            color: Colors.black, // Warna ikon
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-            // Aksi ketika ikon menu diklik
-          },
+          icon: Icon(Icons.arrow_back, color: Color(0xFF3629B7)),
+          onPressed: () => Navigator.pop(context),
         ),
-        actions: [
-          // IconButton(
-          //   icon: Icon(
-          //     Icons.search, // Icon untuk pencarian
-          //     color: Colors.black, // Warna ikon
-          //   ),
-          //   onPressed: () {
-          //     // Aksi ketika ikon pencarian diklik
-          //   },
-          // ),
-          // IconButton(
-          //   icon: Icon(
-          //     Icons.filter_list, // Icon untuk filter
-          //     color: Colors.black, // Warna ikon
-          //   ),
-          //   onPressed: () {
-          //     // Aksi ketika ikon filter diklik
-          //   },
-          // ),
-        ],
       ),
-      body: ListView(
-        children: [
-          Card(
-            child: Container(
-              padding: EdgeInsets.all(20),
-              margin: EdgeInsets.symmetric(vertical: 1.0, horizontal: 1.0),
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                begin: Alignment.topRight,
-                end: Alignment.bottomLeft,
-                colors: [
-                  const Color.fromARGB(255, 255, 255, 255),
-                  Colors.white,
-                ],
-              )),
-              child: Container(
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                    begin: Alignment.topRight,
-                    end: Alignment.bottomLeft,
-                    colors: [
-                      const Color.fromARGB(255, 255, 255, 255),
-                      Colors.white,
-                    ],
-                  )),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Card(
+          elevation: 8,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: BorderSide(color: Colors.grey.shade200, width: 1),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+
+                _buildInfoRow(
+                  icon: Icons.badge,
+                  label: 'NIP',
+                  value: posts.nip,
+                  fontSize: fontSize,
+                ),
+                SizedBox(height: 16),
+                _buildInfoRow(
+                  icon: Icons.person,
+                  label: 'Nama',
+                  value: posts.nama,
+                  fontSize: fontSize,
+                ),
+                SizedBox(height: 16),
+
+
+                _buildInfoRow(
+                  icon: Icons.description,
+                  label: 'Keterangan',
+                  value: posts.rekap_belanja,
+                  fontSize: fontSize,
+                ),
+                SizedBox(height: 16),
+
+
+                _buildInfoRow(
+                  icon: Icons.attach_money,
+                  label: 'Nominal',
+                  value: "Rp. ${posts.jumlah_uang}",
+                  fontSize: fontSize,
+                  isNominal: true,
+                ),
+
+                SizedBox(height: 30),
+                Divider(color: Colors.grey.shade300),
+                SizedBox(height: 16),
+
+
+                Center(
                   child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'NIP:',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          Icons.image_outlined,
+                          size: 60,
+                          color: Color(0xFF000000),
                         ),
-                        Text(
-                          posts.nip,
-                          style: TextStyle(
-                            fontSize: fontSize,
-                          ),
+                        onPressed: () => _showPhotoDialog(context),
+                      ),
+                      Text(
+                        "Lihat Foto Bukti Belanja",
+                        style: TextStyle(
+                          color: Color(0xFF000000),
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
                         ),
-
-                        const Text(
-                          'Nama:',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          posts.nama,
-                          style: TextStyle(
-                            fontSize: fontSize,
-                          ),
-                        ),
-                        // const SizedBox(
-                        //   height: 5,
-                        // ),
-                        const Text(
-                          'Keterangan:',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          posts.rekap_belanja,
-                          style: TextStyle(
-                            fontSize: fontSize,
-                          ),
-                        ),
-
-                        const Text(
-                          'Nominal:',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-
-                        Text(
-                          'Rp. ${posts.jumlah_uang}',
-                          style: TextStyle(
-                            fontSize: fontSize,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        const Text(
-                          'Foto:',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Image.network(
-                          '${posts.foto1}',
-                          //     frameBuilder: (context, child, frame, _) {
-                          //   if (frame == null) {
-                          //     // fallback to placeholder
-                          //     return CircularProgressIndicator();
-                          //   }
-                          //   return CircularProgressIndicator();
-                          // }
-                        ),
-                        // Text('Foto: ${posts.foto1}'),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        const Text(
-                          'Foto:',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Image.network(
-                          '${posts.foto2}',
-                          //     frameBuilder: (context, child, frame, _) {
-                          //   if (frame == null) {
-                          //     // fallback to placeholder
-                          //     return CircularProgressIndicator();
-                          //   }
-                          //   return CircularProgressIndicator();
-                          // }
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        const Text(
-                          'Foto:',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Image.network(
-                          '${posts.foto3}',
-                          //     frameBuilder: (context, child, frame, _) {
-                          //   if (frame == null) {
-                          //     // fallback to placeholder
-                          //     return CircularProgressIndicator();
-                          //   }
-                          //   return CircularProgressIndicator();
-                          // }
-                        ),
-                      ])),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
+        ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
+        selectedItemColor: const Color(0xFF4DA3FF),
+        unselectedItemColor: Color(0xFF4DA3FF),
+        type: BottomNavigationBarType.fixed,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.arrow_back),
+            label: "Kembali",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: "Home",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_cart),
+            label: "Belanja",
+          ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Color.fromARGB(255, 255, 255, 255),
-        foregroundColor: Colors.black,
-        onPressed: () {
-          Navigator.pop(context);
-          // Respond to button press
+        onTap: (index) {
+          if (index == 0) {
+            Navigator.pop(context);
+          } else if (index == 1) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => RegisterPage()),
+            );
+          } else if (index == 2) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => UploadPage()),
+            );
+          }
         },
-        icon: Icon(Icons.arrow_back),
-        label: Text('Kembali'),
       ),
+    );
+  }
+
+
+  Widget _buildInfoRow({
+    required IconData icon,
+    required String label,
+    required String value,
+    required double fontSize,
+    bool isNominal = false,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, color: Colors.grey.shade600, size: 20),
+        SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
+              ),
+              SizedBox(height: 4),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: fontSize,
+                  color: isNominal ? Colors.green[700] : Colors.black,
+                  fontWeight: isNominal ? FontWeight.bold : FontWeight.normal,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

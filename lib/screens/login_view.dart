@@ -1,7 +1,4 @@
-// ignore_for_file: prefer_const_constructors_in_immutables, prefer_const_literals_to_create_immutables, prefer_const_constructors, no_leading_underscores_for_local_identifiers, use_build_context_synchronously, avoid_single_cascade_in_expression_statements
-
 import 'dart:convert';
-
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -16,67 +13,172 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPage();
 }
 
-class HeadClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    Path path = Path();
-    path.lineTo(0, size.height);
-    path.quadraticBezierTo(
-        size.width / 4, size.height - 40, size.width / 2, size.height - 20);
-    path.quadraticBezierTo(
-        3 / 4 * size.width, size.height, size.width, size.height - 30);
-    path.lineTo(size.width, 0);
-
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
-}
-
 class _LoginPage extends State<LoginPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   var txtEditEmail = TextEditingController();
   var txtEditPwd = TextEditingController();
 
+  Dialogs dialogs = Dialogs();
+
+  @override
+  void initState() {
+    ceckLogin();
+    super.initState();
+  }
+
+  @override
+  dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Form(
-        key: _formKey,
-        child: Container(
-          decoration: BoxDecoration(
-              gradient: LinearGradient(
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-            colors: [
-              const Color.fromARGB(255, 254, 255, 255),
-              Colors.white,
-            ],
-          )),
-          padding: EdgeInsets.all(20.0),
-          child: ListView(
-            children: <Widget>[
-              Center(
+      backgroundColor: const Color(0xFF2E00B8),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              const SizedBox(height: 60),
+              // Logo
+              Image.asset(
+                'assets/icon_login_putih.png',
+                width: 120,
+                height: 120,
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                "KOTA MADIUN",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                "CATATAN BELANJA PEGAWAI",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.1,
+                ),
+              ),
+              const SizedBox(height: 30),
+
+              // Container Form
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                ),
                 child: Column(
-                  children: <Widget>[
-                    _iconLogin(),
-                    _titleDescription(),
-
-                    const SizedBox(height: 10.0),
-
-                    inputEmail(),
-                    const SizedBox(height: 20.0),
-                    inputPassword(),
-                    const SizedBox(height: 5.0),
-                    _buildButton(context),
-                    _buildTextButton(context),
-                    // _textField(context),
-                    // headerSection(),
-                    // textSection(),
-                    // buttonSection(),
-                    // // _Checkbox(),
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Text(
+                      "Masukkan NIP dan Password",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    // Input NIP
+                    TextFormField(
+                      cursorColor: Colors.black,
+                      keyboardType: TextInputType.number,
+                      validator: (nip) {
+                        if (nip == null || nip.isEmpty) {
+                          return 'NIP harus diisi';
+                        }
+                        if (!RegExp(r'^[0-9]+$').hasMatch(nip)) {
+                          return 'NIP hanya boleh berisi angka';
+                        }
+                        return null;
+                      },
+                      controller: txtEditEmail,
+                      onSaved: (val) => txtEditEmail.text = val!,
+                      decoration: InputDecoration(
+                        hintText: 'Masukkan NIP',
+                        prefixIcon: const Icon(
+                          Icons.email_outlined,
+                          color: Color(0xFF2E00B8),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide:
+                          const BorderSide(color: Color(0xFF2E00B8), width: 2),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    // Input Password
+                    TextFormField(
+                      cursorColor: Colors.black,
+                      keyboardType: TextInputType.text,
+                      obscureText: true,
+                      validator: (val) =>
+                      val == null || val.isEmpty ? 'Password harus diisi' : null,
+                      controller: txtEditPwd,
+                      onSaved: (val) => txtEditPwd.text = val!,
+                      decoration: InputDecoration(
+                        hintText: 'Masukkan Password',
+                        prefixIcon: const Icon(
+                          Icons.lock_outline,
+                          color: Color(0xFF2E00B8),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide:
+                          const BorderSide(color: Color(0xFF2E00B8), width: 2),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    // Tombol Masuk
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF4DA3FF),
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: () => _validateInputs(),
+                      child: const Text(
+                        "MASUK",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
                   ],
+                ),
+              ),
+
+              // Tombol Hubungi Admin
+              const SizedBox(height: 15),
+              TextButton(
+                onPressed: () {
+                  showContactAdminDialog(context);
+                },
+                child: const Text(
+                  'Tidak Punya akun? Hubungi Admin',
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
             ],
@@ -86,143 +188,13 @@ class _LoginPage extends State<LoginPage> {
     );
   }
 
-  Widget _iconLogin() {
-    return Image.asset(
-      'assets/icon_login.png',
-      width: 150.0,
-      height: 150.0,
-    );
-  }
-
-  Widget _titleDescription() {
-    return Column(
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.only(top: 12.0),
-        ),
-        Text(
-          "CATATAN BELANJA PEGAWAI",
-          style: TextStyle(
-            fontSize: 24.0,
-            fontWeight: FontWeight.bold,
-            color: Color.fromARGB(255, 107, 28, 204),
-          ),
-          textAlign: TextAlign.center,
-        ),
-        Padding(
-          padding: EdgeInsets.only(top: 16.0),
-        ),
-        Text(
-          "Masukkan NIP dan Password",
-          style: TextStyle(
-            color: Color.fromARGB(255, 11, 11, 11),
-            fontSize: 14.0,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget inputEmail() {
-    return TextFormField(
-        cursorColor: Color.fromARGB(255, 0, 0, 0),
-        keyboardType: TextInputType.emailAddress,
-        autofocus: false,
-        validator: (email) => email != null &&
-                !EmailValidator.validate(email) &&
-                RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{30,}$')
-                    .hasMatch(email)
-            ? 'Masukkan email yang valid'
-            : null,
-        controller: txtEditEmail,
-        onSaved: (String? val) {
-          txtEditEmail.text = val!;
-        },
-        decoration: InputDecoration(
-          hintText: 'Masukkan NIP',
-          hintStyle: const TextStyle(color: Color.fromARGB(255, 139, 135, 135)),
-          labelText: "Masukkan NIP",
-          labelStyle:
-              const TextStyle(color: Color.fromARGB(255, 139, 135, 135)),
-          prefixIcon: const Icon(
-            Icons.email_outlined,
-            color: Color.fromARGB(255, 107, 28, 204),
-          ),
-          fillColor: Color.fromARGB(255, 10, 255, 10),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(25.0),
-            borderSide: const BorderSide(
-              color: Color.fromARGB(255, 107, 28, 204),
-            ),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(25.0),
-            borderSide: const BorderSide(
-              color: Color.fromARGB(255, 107, 28, 204),
-              width: 2.0,
-            ),
-          ),
-        ),
-        style: const TextStyle(
-            fontSize: 16.0, color: Color.fromARGB(255, 0, 0, 0)));
-  }
-
-  Widget inputPassword() {
-    return TextFormField(
-      cursorColor: Color.fromARGB(255, 0, 0, 0),
-      keyboardType: TextInputType.text,
-      autofocus: false,
-      obscureText: true, //make decript inputan
-      validator: (String? arg) {
-        if (arg == null || arg.isEmpty) {
-          return 'Password harus diisi';
-        } else {
-          return null;
-        }
-      },
-      controller: txtEditPwd,
-      onSaved: (String? val) {
-        txtEditPwd.text = val!;
-      },
-      decoration: InputDecoration(
-        hintText: 'Masukkan Password',
-        hintStyle: const TextStyle(color: Color.fromARGB(255, 139, 135, 135)),
-        labelText: "Masukkan Password",
-        labelStyle: const TextStyle(color: Color.fromARGB(255, 139, 135, 135)),
-        prefixIcon: const Icon(
-          Icons.email_outlined,
-          color: Color.fromARGB(255, 107, 28, 204),
-        ),
-        fillColor: Color.fromARGB(255, 10, 255, 10),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(25.0),
-          borderSide: const BorderSide(
-            color: Color.fromARGB(255, 107, 28, 204),
-          ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(25.0),
-          borderSide: const BorderSide(
-            color: Color.fromARGB(255, 107, 28, 204),
-            width: 2.0,
-          ),
-        ),
-      ),
-      style:
-          const TextStyle(fontSize: 16.0, color: Color.fromARGB(255, 0, 0, 0)),
-    );
-  }
-
   void _validateInputs() {
     if (_formKey.currentState!.validate()) {
-      //If all data are correct then save data to out variables
       _formKey.currentState!.save();
       doLogin(txtEditEmail.text, txtEditPwd.text);
     }
   }
 
-  Dialogs dialogs = Dialogs(); // Membuat instance dari kelas Dialogs
   doLogin(email, password) async {
     final GlobalKey<State> _keyLoader = GlobalKey<State>();
     dialogs.loading(context, _keyLoader, "Proses ...");
@@ -237,35 +209,23 @@ class _LoginPage extends State<LoginPage> {
           }));
 
       final output = jsonDecode(response.body);
+      Navigator.of(_keyLoader.currentContext!, rootNavigator: false).pop();
       if (response.statusCode == 200) {
-        Navigator.of(_keyLoader.currentContext!, rootNavigator: false).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(
-            output['message'],
-            style: const TextStyle(fontSize: 16),
-          )),
+          SnackBar(content: Text(output['message'], style: const TextStyle(fontSize: 16))),
         );
 
         if (output['success'] == true) {
           saveSession(email);
         }
-        //debugPrint(output['message']);
       } else {
-        Navigator.of(_keyLoader.currentContext!, rootNavigator: false).pop();
-        //debugPrint(output['message']);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(
-            output.toString(),
-            style: const TextStyle(fontSize: 16),
-          )),
+          SnackBar(content: Text(output.toString(), style: const TextStyle(fontSize: 16))),
         );
       }
     } catch (e) {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: false).pop();
       Dialogs.popUp(context, '$e');
-      debugPrint('$e');
     }
   }
 
@@ -276,10 +236,8 @@ class _LoginPage extends State<LoginPage> {
 
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(
-        builder: (BuildContext context) => RegisterPage(),
-      ),
-      (route) => false,
+      MaterialPageRoute(builder: (BuildContext context) => RegisterPage()),
+          (route) => false,
     );
   }
 
@@ -289,149 +247,86 @@ class _LoginPage extends State<LoginPage> {
     if (islogin != null && islogin) {
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(
-          builder: (BuildContext context) => RegisterPage(),
-        ),
-        (route) => false,
+        MaterialPageRoute(builder: (BuildContext context) => RegisterPage()),
+            (route) => false,
       );
     }
   }
-// Fungsi untuk menampilkan dialog
-void showContactAdminDialog(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        title: Row(
-          children: [
-            Icon(Icons.contact_mail, color: Colors.blue),
-            SizedBox(width: 10),
-            Text('Kontak Admin Kota', style: TextStyle(fontWeight: FontWeight.bold)),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Untuk mendapatkan NIP dan Password, silakan hubungi admin kota melalui email di bawah:',
-              style: TextStyle(fontSize: 16),
-            ),
-            SizedBox(height: 15),
-            Center(
-              child: GestureDetector(
-                onTap: () {
-                  launchEmailApp();
-                },
-                child: Text(
-                  'kominfo@madiunkota.go.id',
-                  style: TextStyle(
-                    color: Colors.blue,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    decoration: TextDecoration.underline,
+
+  void showContactAdminDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Row(
+            children: const [
+              Icon(Icons.contact_mail, color: Colors.blue),
+              SizedBox(width: 10),
+              Text('Kontak Admin Kota', style: TextStyle(fontWeight: FontWeight.bold)),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Untuk mendapatkan NIP dan Password, silakan hubungi admin kota melalui email di bawah:',
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 15),
+              Center(
+                child: GestureDetector(
+                  onTap: () {
+                    launchEmailApp();
+                  },
+                  child: const Text(
+                    'kominfo@madiunkota.go.id',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      decoration: TextDecoration.underline,
+                    ),
                   ),
                 ),
               ),
-            ),
-            SizedBox(height: 20),
+              const SizedBox(height: 20),
+              const Center(
+                child: Icon(Icons.email_outlined, color: Colors.blue, size: 40),
+              ),
+            ],
+          ),
+          actions: [
             Center(
-              child: Icon(
-                Icons.email_outlined,
-                color: Colors.blue,
-                size: 40,
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                ),
+                child: const Text('OK', style: TextStyle(color: Colors.white, fontSize: 16)),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
               ),
             ),
           ],
-        ),
-        actions: [
-          Center(
-            child: TextButton(
-              style: TextButton.styleFrom(
-                backgroundColor: Colors.blue,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              ),
-              child: Text('OK', style: TextStyle(color: Colors.white, fontSize: 16)),
-              onPressed: () {
-                Navigator.of(context).pop(); // Menutup dialog
-              },
-            ),
-          ),
-        ],
-      );
-    },
-  );
-}
-
-void launchEmailApp() async {
-  const email = 'mailto:kominfo@madiunkota.go.id';
-  if (await canLaunch(email)) {
-    await launch(email);
-  } else {
-    throw 'Could not launch $email';
-  }
-}
-
-  @override
-  void initState() {
-    ceckLogin();
-    super.initState();
-  }
-
-  @override
-  dispose() {
-    super.dispose();
-  }
-
-  Widget _buildButton(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),
-      child: ElevatedButton.icon(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Color.fromARGB(255, 107, 28, 204),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20.0),
-            side: const BorderSide(color: Colors.blue),
-          ),
-          elevation: 10,
-        ),
-        onPressed: () => _validateInputs(),
-        icon: const Icon(Icons.arrow_right_alt),
-        label: const Text(
-          "MASUK",
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-      ),
+        );
+      },
     );
   }
 
-  // Fungsi untuk widget TextButton
-Widget _buildTextButton(BuildContext context) {
-  return Container(
-    padding: const EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),
-    child: TextButton(
-      onPressed: () {
-        showContactAdminDialog(context);
-      },
-      child: const Text(
-        'Tidak punya akun? Hubungi Admin',
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          color: Colors.black54,
-        ),
-      ),
-    ),
-  );
-}
-
+  void launchEmailApp() async {
+    const email = 'mailto:kominfo@madiunkota.go.id';
+    if (await canLaunch(email)) {
+      await launch(email);
+    } else {
+      throw 'Could not launch $email';
+    }
+  }
 }

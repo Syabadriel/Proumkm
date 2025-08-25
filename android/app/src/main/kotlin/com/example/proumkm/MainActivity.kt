@@ -1,6 +1,5 @@
-package com.kominfo.proumkm
+package com.example.proumkm
 
 import io.flutter.embedding.android.FlutterActivity
 
-class MainActivity: FlutterActivity() {
-}
+class MainActivity : FlutterActivity()

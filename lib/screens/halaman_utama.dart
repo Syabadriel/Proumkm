@@ -1,702 +1,451 @@
-// ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors, prefer_const_literals_to_create_immutables, unused_local_variable, no_leading_underscores_for_local_identifiers, prefer_typing_uninitialized_variables, avoid_unnecessary_containers, non_constant_identifier_names, avoid_types_as_parameter_names, unused_import, duplicate_import, unnecessary_import, unused_field, avoid_print, must_call_super, unnecessary_string_interpolations, use_build_context_synchronously, unnecessary_brace_in_string_interps
+// ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors
 
-import 'dart:async';
 import 'dart:convert';
-import 'dart:core';
-
 import 'package:animated_card/animated_card.dart';
-import 'package:email_validator/email_validator.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:proumkm/DataBelanja/Home.dart';
-import 'package:proumkm/DataBelanja/postCard.dart';
 import 'package:proumkm/DataBelanja/posts.dart';
-import 'package:proumkm/apifolders/dialogs.dart';
-import 'package:proumkm/constans.dart';
 import 'package:proumkm/screens/form_belanja.dart';
-import 'package:proumkm/screens/halaman_utama.dart';
 import 'package:proumkm/screens/login_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'coba.dart';
-
 class RegisterPage extends StatefulWidget {
   static const routeName = "/registerPage";
-  final _formKey = GlobalKey<FormState>();
-  RegisterPage({Key? key}) : super(key: key);
+
+  const RegisterPage({Key? key}) : super(key: key);
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  int _counter = 1;
-  final _formKey = GlobalKey<FormState>();
-
-  String totalBelanja = '';
-  String totalHariIni = '';
-  String totalMingguIni = '';
-  String totalBulanIni = '';
-// =============================================================================
-  Future<List<Posts>> fetchPosts() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    await pref.setString("nip", email);
-    var response = await http.post(
-      Uri.parse('https://proumkm.madiunkota.go.id/api/proumkm/belanja/pegawai'),
-      headers: {
-        "passcode": "k0taPendekArr",
-      },
-      body: {
-        "nip": email,
-      },
-    );
-
-    print(response.statusCode);
-    print(response.body);
-
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> jsonResult = jsonDecode(response.body);
-
-      List<Posts> posts = (jsonResult['data'] as List<dynamic>)
-          .map((data) => Posts.fromJson(data))
-          .toList();
-      return posts;
-    } else {
-      throw Exception('Failed to load Posts');
-    }
-  }
-
+  String totalBelanja = '0';
+  String totalHariIni = '0';
+  String totalMingguIni = '0';
+  String totalBulanIni = '0';
   String email = "";
-  getPref() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    var islogin = pref.getBool("is_login");
-    if (islogin != null && islogin == true) {
-      setState(() {
-        email = pref.getString("email")!;
-      });
-    }
-  }
-
-  logOut() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    setState(() {
-      preferences.remove("is_login");
-      preferences.remove("email");
-    });
-
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(
-        builder: (BuildContext context) => LoginPage(),
-      ),
-      (route) => false,
-    );
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-          content: Text(
-        "Berhasil logout",
-        style: TextStyle(fontSize: 16),
-      )),
-    );
-  }
 
   late Future<List<Posts>> futurePosts;
 
   @override
   void initState() {
-    getPref();
-    futurePosts = fetchPosts();
-    // futureTotal = fetchtotal();
-    // _counter;
-    fetchData();
+    super.initState();
+    futurePosts = Future.value([]);
+    _initData();
   }
 
-  @override
-  dispose() {
-    super.dispose();
+  Future<void> _initData() async {
+    final pref = await SharedPreferences.getInstance();
+    final isLogin = pref.getBool("is_login") ?? false;
+
+    if (isLogin) {
+      setState(() {
+        email = pref.getString("email") ?? "";
+      });
+
+      await _fetchData();
+      setState(() {
+        futurePosts = _fetchPosts();
+      });
+    }
   }
 
-// =============================================================================
-  Future<void> fetchData() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    await pref.setString("nip", email);
-
+  Future<void> _fetchData() async {
     final response = await http.post(
       Uri.parse(
           'https://proumkm.madiunkota.go.id/api/proumkm/total/belanja/pegawai'),
-      headers: {
-        'passcode': 'k0taPendekArr',
-      },
-      body: {
-        "nip": email,
-      },
+      headers: {'passcode': 'k0taPendekArr'},
+      body: {"nip": email},
     );
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-
       setState(() {
-        totalBelanja = data['total_belanja'] ?? '';
-        totalHariIni = data['total_hari_ini'] ?? '';
-        totalMingguIni = data['total_minggu_ini'] ?? '';
-        totalBulanIni = data['total_bulan_ini'] ?? '';
+        totalBelanja = (data['total_belanja'] ?? '0').toString();
+        totalHariIni = (data['total_hari_ini'] ?? '0').toString();
+        totalMingguIni = (data['total_minggu_ini'] ?? '0').toString();
+        totalBulanIni = (data['total_bulan_ini'] ?? '0').toString();
       });
-    } else {
-      // Handle error response
-      print('Error: ${response.statusCode}');
     }
   }
 
-// =============================================================================
+  Future<List<Posts>> _fetchPosts() async {
+    final response = await http.post(
+      Uri.parse(
+          'https://proumkm.madiunkota.go.id/api/proumkm/belanja/pegawai'),
+      headers: {"passcode": "k0taPendekArr"},
+      body: {"nip": email},
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonResult = jsonDecode(response.body);
+      return (jsonResult['data'] as List<dynamic>)
+          .map((data) => Posts.fromJson(data))
+          .toList();
+    } else {
+      throw Exception('Gagal memuat data belanja');
+    }
+  }
+
+  Future<void> _logOut() async {
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.clear();
+
+    if (!mounted) return;
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => LoginPage()),
+          (route) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final Posts posts;
-    return Scaffold(
-      body: Form(
-        key: _formKey,
-        child: Container(
-          decoration: BoxDecoration(
-              gradient: LinearGradient(
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-            colors: [
-              const Color.fromARGB(255, 255, 255, 255),
-              Colors.white,
-            ],
-          )),
-          padding: EdgeInsets.zero,
-          child: ListView(
-            children: <Widget>[
-              Center(
-                child: Column(
-                  children: <Widget>[
-                    _grupcard(context),
-                    SizedBox(height: 15),
-                    _tambah(context),
-                    SizedBox(height: 15),
-                    _txthistory(),
-                    _table(context),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      floatingActionButton: Container(
-        width: 120,
-        height: 60,
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Align(
-                alignment: Alignment.center,
-                child: FloatingActionButton.extended(
-                  backgroundColor: Color.fromARGB(255, 26, 179, 148),
-                  foregroundColor: Colors.white,
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => UploadPage()));
-                    // Kode yang akan dijalankan saat tombol ditekan
-                  },
-                  icon: Icon(Icons.shopping_cart_checkout_outlined, size: 25),
-                  label: Text(
-                    'Belanja',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-    );
-  }
-
-  Widget _appbar() {
-    return AppBar(
-      leading: Icon(
-        (Icons.home_filled),
-        color: Color.fromARGB(255, 21, 165, 255),
-        shadows: <Shadow>[
-          Shadow(
-            offset: Offset(0, 0),
-            blurRadius: 2,
-            color: Color.fromARGB(127, 0, 0, 0),
-          ),
-        ],
-      ),
-      title: Text(
-        ("Dashboard"),
-        style: TextStyle(
-          color: Color.fromARGB(255, 21, 165, 255),
-          fontSize: 25.0,
-          shadows: <Shadow>[
-            Shadow(
-              offset: Offset(0, 0),
-              blurRadius: 2,
-              color: Color.fromARGB(127, 0, 0, 0),
-            ),
-          ],
-        ),
-        textAlign: TextAlign.left,
-      ),
-      backgroundColor: Color.fromARGB(255, 255, 255, 255),
-      titleSpacing: 2,
-    );
-  }
-
-  Widget _grupcard(BuildContext context) {
-    return Column(
-      children: [
-        AnimatedCard(
-          direction: AnimatedCardDirection
-              .right, // Ganti dengan arah animasi yang diinginkan
-          child: _cardtotal(),
-        ),
-        SizedBox(height: 10),
-        AnimatedCard(
-          direction: AnimatedCardDirection
-              .left, // Ganti dengan arah animasi yang diinginkan
-          child: _cardhariini(),
-        ),
-        SizedBox(height: 10),
-        AnimatedCard(
-          direction: AnimatedCardDirection
-              .right, // Ganti dengan arah animasi yang diinginkan
-          child: _cardmingguini(),
-        ),
-        SizedBox(height: 10),
-        AnimatedCard(
-          direction: AnimatedCardDirection
-              .left, // Ganti dengan arah animasi yang diinginkan
-          child: _cardbulanini(),
-        ),
-      ],
-    );
-  }
-
-  Widget _cardtotal() {
-    final formatCurrency = NumberFormat.currency(
+    final formatRupiah = NumberFormat.currency(
       locale: 'id_ID',
       symbol: 'Rp ',
       decimalDigits: 0,
     );
 
-    return Card(
-      child: Container(
-        padding: const EdgeInsets.all(10.0),
-        width: 500,
-        height: 90,
-        decoration: BoxDecoration(
-          color: Color.fromARGB(255, 190, 190, 190).withOpacity(0.8),
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        child: Row(
-          children: <Widget>[
-            Icon(
-              Icons.tour_sharp,
-              size: 50,
-              color: Colors.white,
-            ),
-            SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    formatCurrency.format(
-                        int.tryParse(totalBelanja) ?? 0), // Ubah di sini
-                    style: TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  Text(
-                    "Total Belanja Anda",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _cardhariini() {
-    return Card(
-      child: Container(
-        padding: const EdgeInsets.all(10.0),
-        width: 500,
-        height: 90,
-        decoration: BoxDecoration(
-          color: Color.fromARGB(255, 26, 179, 148)
-              .withOpacity(0.8), // Ganti dengan warna yang diinginkan
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        child: Row(
-          children: <Widget>[
-            Icon(
-              FontAwesomeIcons.calendarDay, size: 50,
-              color: Colors.white, // Ganti dengan warna ikon yang sesuai
-            ),
-            SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    "Rp. ${totalHariIni}",
-                    style: TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                      color:
-                          Colors.white, // Ganti dengan warna teks yang sesuai
-                    ),
-                  ),
-                  Text(
-                    "Belanja Hari ini",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color:
-                          Colors.white, // Ganti dengan warna teks yang sesuai
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _cardmingguini() {
-    return Card(
-      child: Container(
-        padding: const EdgeInsets.all(10.0),
-        width: 500,
-        height: 90,
-        decoration: BoxDecoration(
-          color: Color.fromARGB(255, 248, 172, 89)
-              .withOpacity(0.8), // Ganti dengan warna yang diinginkan
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        child: Row(
-          children: <Widget>[
-            Icon(
-              FontAwesomeIcons.calendarWeek,
-              size: 50,
-              color: Colors.white, // Ganti dengan warna ikon yang sesuai
-            ),
-            SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    "Rp. ${totalMingguIni}",
-                    style: TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                      color:
-                          Colors.white, // Ganti dengan warna teks yang sesuai
-                    ),
-                  ),
-                  Text(
-                    "Belanja Minggu Ini",
-                    style: TextStyle(
-                      fontSize: 20,
-                      color:
-                          Colors.white, // Ganti dengan warna teks yang sesuai
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _cardbulanini() {
-    return Card(
-      child: Container(
-        padding: const EdgeInsets.all(10.0),
-        width: 500,
-        height: 90,
-        decoration: BoxDecoration(
-          color: Color.fromARGB(255, 35, 198, 200)
-              .withOpacity(0.8), // Ganti dengan warna yang diinginkan
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        child: Row(
-          children: <Widget>[
-            Icon(
-              FontAwesomeIcons.calendarAlt,
-              size: 50,
-              color: Colors.white, // Ganti dengan warna ikon yang sesuai
-            ),
-            SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    "Rp. ${totalBulanIni}",
-                    style: TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                      color:
-                          Colors.white, // Ganti dengan warna teks yang sesuai
-                    ),
-                  ),
-                  Text(
-                    "Belanja Bulan Ini",
-                    style: TextStyle(
-                      fontSize: 20,
-                      color:
-                          Colors.white, // Ganti dengan warna teks yang sesuai
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _table(BuildContext context) => FutureBuilder<List<Posts>>(
-        future: futurePosts,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10.0),
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.3),
-                      spreadRadius: 2,
-                      blurRadius: 3,
-                      offset: Offset(0, 2),
-                    ),
-                  ],
+    return Scaffold(
+      backgroundColor: Colors.grey[100],
+      body: SafeArea(
+        child: Column(
+          children: [
+            // HEADER modern
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFF3629B7), Color(0xFF4DA3FF)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-                padding: EdgeInsets.only(left: 1),
-                child: DataTable(
-                  columnSpacing: 15.0,
-                  columns: <DataColumn>[
-                    DataColumn(
-                      label: Text(
-                        'No',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
+                borderRadius: BorderRadius.vertical(
+                  bottom: Radius.circular(28),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 12,
+                    offset: Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 34,
+                    backgroundColor: Colors.white,
+                    child: Padding(
+                      padding: EdgeInsets.all(6),
+                      child: Image.asset("assets/icon_login_polos.png"),
+                    ),
+                  ),
+                  SizedBox(width: 16),
+                  Expanded(
+                    child: Text(
+                      "PRO-UMKM\nKOTA MADIUN",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                        height: 1.3,
+                        letterSpacing: 1,
                       ),
                     ),
-                    DataColumn(
-                      label: Text(
-                        'Nama',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
+                  ),
+                ],
+              ),
+            ),
+
+            SizedBox(height: 16),
+
+            // BODY SCROLLABLE
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.fromLTRB(16, 8, 16, 80),
+                children: [
+                  // CARD UTAMA modern
+                  Container(
+                    padding: EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Color(0xFF3629B7), Color(0xFF4DA3FF)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
-                    ),
-                    DataColumn(
-                      label: Text(
-                        'Keterangan',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 10,
+                          offset: Offset(0, 6),
                         ),
-                      ),
-                    ),
-                    DataColumn(
-                      label: Text(
-                        'Nominal',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                  rows: snapshot.data!.asMap().entries.map<DataRow>((entry) {
-                    int index = entry.key;
-                    Posts post = entry.value;
-                    return DataRow(
-                      cells: <DataCell>[
-                        DataCell(Container(
-                          width: 20,
-                          child: Text(
-                            '${_counter + index}',
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.normal,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        )),
-                        DataCell(Container(
-                          width: 150,
-                          child: Text(
-                            '${post.nama}',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.normal,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        )),
-                        DataCell(Container(
-                          width: 200,
-                          child: Text(
-                            '${post.rekap_belanja}',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.normal,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        )),
-                        DataCell(Text(
-                          'Rp. ${post.jumlah_uang}',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.normal,
-                          ),
-                        )),
                       ],
-                    );
-                  }).toList(),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(Icons.shopping_bag_rounded,
+                            color: Colors.white, size: 40),
+                        SizedBox(height: 12),
+                        Text("Total Belanja",
+                            style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500)),
+                        SizedBox(height: 6),
+                        Text(
+                          formatRupiah.format(int.tryParse(totalBelanja) ?? 0),
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold),
+                        ),
+
+                        SizedBox(height: 20),
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _menuButton(Icons.add_shopping_cart_rounded,
+                                "Belanja", () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (_) => UploadPage()));
+                                }),
+                            _menuButton(Icons.receipt_long_rounded,
+                                "Detail Belanja", () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (_) => Home()));
+                                }),
+                          ],
+                        ),
+
+                        SizedBox(height: 20),
+
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 12, horizontal: 16),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              _infoItem("Harian",
+                                  formatRupiah.format(int.tryParse(totalHariIni) ?? 0)),
+                              _infoItem("Mingguan",
+                                  formatRupiah.format(int.tryParse(totalMingguIni) ?? 0)),
+                              _infoItem("Bulanan",
+                                  formatRupiah.format(int.tryParse(totalBulanIni) ?? 0)),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  SizedBox(height: 28),
+
+                  // HISTORY TITLE
+                  Row(
+                    children: [
+                      Icon(Icons.history_rounded,
+                          color: Colors.black87, size: 26),
+                      SizedBox(width: 8),
+                      Text("History Belanja",
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87)),
+                    ],
+                  ),
+                  SizedBox(height: 12),
+                  _buildHistoryList(formatRupiah),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+
+      // BOTTOM NAVIGATION modern
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black12, blurRadius: 8, offset: Offset(0, -2)),
+          ],
+        ),
+        child: BottomNavigationBar(
+          backgroundColor: Colors.transparent,
+          selectedItemColor: Color(0xFF3629B7),
+          unselectedItemColor: Colors.grey,
+          elevation: 0,
+          type: BottomNavigationBarType.fixed,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.logout_rounded),
+              label: "Keluar",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.shopping_cart_rounded),
+              label: "Belanja",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.receipt_long_rounded),
+              label: "Detail Belanja",
+            ),
+          ],
+          onTap: (index) {
+            if (index == 0) {
+              _logOut();
+            } else if (index == 1) {
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (_) => UploadPage()));
+            } else if (index == 2) {
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (_) => Home()));
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _menuButton(IconData icon, String title, VoidCallback onTap) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(50),
+      onTap: onTap,
+      child: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 8,
+                  offset: Offset(0, 4),
+                )
+              ],
+            ),
+            child: Icon(icon, color: Color(0xFF3629B7), size: 28),
+          ),
+          SizedBox(height: 8),
+          Text(title,
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14)),
+        ],
+      ),
+    );
+  }
+
+  Widget _infoItem(String label, String value) {
+    return Column(
+      children: [
+        Text(label,
+            style: TextStyle(
+                color: Colors.white70,
+                fontWeight: FontWeight.w500,
+                fontSize: 14)),
+        SizedBox(height: 4),
+        Text(value,
+            style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16)),
+      ],
+    );
+  }
+
+  Widget _buildHistoryList(NumberFormat formatRupiah) {
+    return FutureBuilder<List<Posts>>(
+      future: futurePosts,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Padding(
+            padding: EdgeInsets.all(24),
+            child: Center(
+                child: CircularProgressIndicator(color: Color(0xFF3629B7))),
+          );
+        }
+        if (snapshot.hasError) {
+          return Padding(
+            padding: EdgeInsets.all(24),
+            child: Text("Gagal memuat data.",
+                style: TextStyle(color: Colors.red)),
+          );
+        }
+
+        final items = snapshot.data ?? [];
+        if (items.isEmpty) {
+          return Padding(
+            padding: EdgeInsets.all(24),
+            child: Text("Belum ada riwayat belanja.",
+                style: TextStyle(color: Colors.grey[600])),
+          );
+        }
+
+        return ListView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: items.length,
+          itemBuilder: (context, index) {
+            final post = items[index];
+            final formattedAmount = formatRupiah
+                .format(int.tryParse(post.jumlah_uang ?? '0') ?? 0);
+
+            return AnimatedCard(
+              direction: AnimatedCardDirection.left,
+              duration: Duration(milliseconds: 400 + index * 100),
+              child: Card(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)),
+                elevation: 2,
+                margin: EdgeInsets.symmetric(vertical: 8),
+                child: ListTile(
+                  contentPadding:
+                  EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  title: Text('${index + 1}. ${post.nama}',
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87)),
+                  subtitle: Padding(
+                    padding: EdgeInsets.only(top: 4),
+                    child: Text(post.rekap_belanja ?? '-',
+                        style: TextStyle(
+                            fontSize: 14, color: Colors.grey[700])),
+                  ),
+                  trailing: Text(
+                    formattedAmount,
+                    style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.green[700]),
+                  ),
                 ),
               ),
             );
-          } else if (snapshot.hasError) {
-            return Text('${snapshot.error}');
-          }
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        },
-      );
-
-  Widget _tambah(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.zero,
-      child: Column(
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.zero,
-            // ignore: unnecessary_new
-            child: ButtonBar(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        Color.fromARGB(255, 26, 179, 148).withOpacity(0.6),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  ),
-                  onPressed: () {
-                    Route route =
-                        MaterialPageRoute(builder: (context) => Home());
-                    Navigator.push(context, route);
-                    // If the form is valid, display a snackbar. In the real world,
-                    // you'd often call a server or save the information in a database.
-                  },
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        "Detail Belanja",
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.white,
-                        ),
-                      ),
-                      SizedBox(width: 5),
-                      Icon(
-                        Icons.line_weight_sharp,
-                        size: 25,
-                        color: Colors.white,
-                      ),
-                    ],
-                  ),
-                ),
-                ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        Color.fromARGB(255, 26, 179, 148).withOpacity(0.6),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  ),
-                  onPressed: () {
-                    logOut();
-                    // Respond to button press
-                  },
-                  icon: Icon(
-                    Icons.arrow_circle_right_outlined,
-                    size: 25,
-                    color: Colors.white,
-                  ),
-                  label: Text(
-                    'Keluar',
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _txthistory() {
-    return Padding(
-      padding: EdgeInsets.all(10),
-      child: Row(
-        children: <Widget>[
-          Text(
-            "History Belanja: ",
-            style: TextStyle(fontSize: 20),
-          ),
-          const SizedBox(height: 15),
-          const SizedBox(height: 15),
-          Padding(padding: EdgeInsets.only(left: 10)),
-        ],
-      ),
+          },
+        );
+      },
     );
   }
 }
