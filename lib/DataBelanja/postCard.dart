@@ -1,113 +1,87 @@
-// ignore_for_file: file_names, prefer_const_constructors, unnecessary_const
+// ignore_for_file: file_names, prefer_const_constructors
 
 import 'package:flutter/material.dart';
 import 'package:proumkm/DataBelanja/detailPage.dart';
 import 'package:proumkm/DataBelanja/posts.dart';
-import 'package:proumkm/screens/halaman_utama.dart';
-import 'package:proumkm/screens/form_belanja.dart';
-
 
 class PostCard extends StatelessWidget {
-  const PostCard({Key? key, required this.posts}) : super(key: key);
   final Posts posts;
+  const PostCard({super.key, required this.posts});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      padding: const EdgeInsets.symmetric(vertical: 10),
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
         onTap: () {
-
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => DetailPage(posts: posts),
+              builder: (_) => DetailPage(posts: posts),
             ),
           );
         },
         child: Card(
-          elevation: 8,
+          elevation: 6,
+          shadowColor: Colors.black26,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Gambar di atas
+              // Gambar
               ClipRRect(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                child: (posts.foto1.isNotEmpty)
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                child: posts.foto1.isNotEmpty
                     ? Image.network(
                   posts.foto1,
                   height: 160,
                   width: double.infinity,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Image.asset(
-                      "assets/noimage.png",
-                      height: 160,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    );
-                  },
+                  errorBuilder: (_, __, ___) => _buildNoImage(),
                 )
-                    : Image.asset(
-                  "assets/noimage.png",
-                  height: 160,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
+                    : _buildNoImage(),
               ),
 
               // Konten teks
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // NIP & Nama
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "NIP: ${posts.nip}",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                posts.nama,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                    Text(
+                      "NIP: ${posts.nip}",
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      posts.nama,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
                     ),
 
+                    const SizedBox(height: 12),
 
-                    SizedBox(height: 12),
+                    // Rekap Belanja
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Icon(Icons.description, size: 20, color: Colors.grey[600]),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             posts.rekap_belanja,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 14,
                               color: Colors.black87,
                               height: 1.4,
@@ -118,16 +92,18 @@ class PostCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    SizedBox(height: 12),
 
+                    const SizedBox(height: 12),
 
+                    // Nominal
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Row(
                           children: [
-                            Icon(Icons.monetization_on, size: 20, color: Colors.green[700]),
-                            SizedBox(width: 8),
+                            Icon(Icons.monetization_on,
+                                size: 20, color: Colors.green[700]),
+                            const SizedBox(width: 6),
                             Text(
                               "Nominal",
                               style: TextStyle(
@@ -143,7 +119,7 @@ class PostCard extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Colors.green[700],
+                            color: Colors.green[800],
                           ),
                         ),
                       ],
@@ -155,6 +131,15 @@ class PostCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildNoImage() {
+    return Image.asset(
+      "assets/noimage.png",
+      height: 160,
+      width: double.infinity,
+      fit: BoxFit.cover,
     );
   }
 }

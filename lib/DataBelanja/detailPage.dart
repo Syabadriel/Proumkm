@@ -7,13 +7,13 @@ import 'package:proumkm/screens/halaman_utama.dart';
 
 class DetailPage extends StatelessWidget {
   final Posts posts;
-  const DetailPage({Key? key, required this.posts}) : super(key: key);
+  const DetailPage({super.key, required this.posts});
+
 
   void _showPhotoDialog(BuildContext context) {
-    List<String> photos = [];
-    if (posts.foto1.isNotEmpty) photos.add(posts.foto1);
-    if (posts.foto2.isNotEmpty) photos.add(posts.foto2);
-    if (posts.foto3.isNotEmpty) photos.add(posts.foto3);
+    final photos = [posts.foto1, posts.foto2, posts.foto3]
+        .where((foto) => foto.isNotEmpty)
+        .toList();
 
     if (photos.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -27,7 +27,7 @@ class DetailPage extends StatelessWidget {
 
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (context) {
         return Dialog(
           backgroundColor: Colors.transparent,
           insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
@@ -54,14 +54,13 @@ class DetailPage extends StatelessWidget {
                           ),
                         );
                       },
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: Colors.grey.shade300,
-                          child: Center(
-                            child: Icon(Icons.broken_image, size: 50, color: Colors.grey),
-                          ),
-                        );
-                      },
+                      errorBuilder: (_, __, ___) => Container(
+                        color: Colors.grey.shade300,
+                        child: Center(
+                          child: Icon(Icons.broken_image,
+                              size: 50, color: Colors.grey),
+                        ),
+                      ),
                     ),
                   );
                 },
@@ -70,7 +69,7 @@ class DetailPage extends StatelessWidget {
                 padding: const EdgeInsets.all(16.0),
                 child: IconButton(
                   icon: Icon(Icons.close_rounded, color: Colors.white, size: 30),
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () => Navigator.pop(context),
                 ),
               ),
             ],
@@ -82,8 +81,7 @@ class DetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    double fontSize = screenWidth * 0.04;
+    final fontSize = MediaQuery.of(context).size.width * 0.04;
 
     return Scaffold(
       backgroundColor: Color(0xFFF5F5FF),
@@ -96,52 +94,40 @@ class DetailPage extends StatelessWidget {
           ),
         ),
         backgroundColor: Color(0xFF3629B7),
-        elevation: 0,
+        elevation: 4,
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Color(0xFF3629B7)),
-          onPressed: () => Navigator.pop(context),
-        ),
+        leading: BackButton(color: Colors.white),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Card(
-          elevation: 8,
+          elevation: 6,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
-            side: BorderSide(color: Colors.grey.shade200, width: 1),
           ),
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 _buildInfoRow(
-                  icon: Icons.badge,
-                  label: 'NIP',
-                  value: posts.nip,
-                  fontSize: fontSize,
-                ),
+                    icon: Icons.badge,
+                    label: 'NIP',
+                    value: posts.nip,
+                    fontSize: fontSize),
                 SizedBox(height: 16),
                 _buildInfoRow(
-                  icon: Icons.person,
-                  label: 'Nama',
-                  value: posts.nama,
-                  fontSize: fontSize,
-                ),
+                    icon: Icons.person,
+                    label: 'Nama',
+                    value: posts.nama,
+                    fontSize: fontSize),
                 SizedBox(height: 16),
-
-
                 _buildInfoRow(
-                  icon: Icons.description,
-                  label: 'Keterangan',
-                  value: posts.rekap_belanja,
-                  fontSize: fontSize,
-                ),
+                    icon: Icons.description,
+                    label: 'Keterangan',
+                    value: posts.rekap_belanja,
+                    fontSize: fontSize),
                 SizedBox(height: 16),
-
-
                 _buildInfoRow(
                   icon: Icons.attach_money,
                   label: 'Nominal',
@@ -149,21 +135,15 @@ class DetailPage extends StatelessWidget {
                   fontSize: fontSize,
                   isNominal: true,
                 ),
-
                 SizedBox(height: 30),
                 Divider(color: Colors.grey.shade300),
                 SizedBox(height: 16),
-
-
                 Center(
                   child: Column(
                     children: [
                       IconButton(
-                        icon: Icon(
-                          Icons.image_outlined,
-                          size: 60,
-                          color: Color(0xFF000000),
-                        ),
+                        icon: Icon(Icons.image_outlined,
+                            size: 60, color: Color(0xFF000000)),
                         onPressed: () => _showPhotoDialog(context),
                       ),
                       Text(
@@ -184,22 +164,13 @@ class DetailPage extends StatelessWidget {
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.white,
-        selectedItemColor: const Color(0xFF4DA3FF),
-        unselectedItemColor: Color(0xFF4DA3FF),
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.blue,
         type: BottomNavigationBarType.fixed,
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.arrow_back),
-            label: "Kembali",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: "Home",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart),
-            label: "Belanja",
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.arrow_back), label: "Kembali"),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+          BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: "Belanja"),
         ],
         onTap: (index) {
           if (index == 0) {
@@ -220,7 +191,6 @@ class DetailPage extends StatelessWidget {
     );
   }
 
-
   Widget _buildInfoRow({
     required IconData icon,
     required String label,
@@ -231,26 +201,23 @@ class DetailPage extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, color: Colors.grey.shade600, size: 20),
+        Icon(icon, color: Colors.grey.shade600, size: 22),
         SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                label,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
-              ),
+              Text(label,
+                  style: TextStyle(
+                      fontWeight: FontWeight.w600, color: Colors.black87)),
               SizedBox(height: 4),
               Text(
                 value,
                 style: TextStyle(
                   fontSize: fontSize,
-                  color: isNominal ? Colors.green[700] : Colors.black,
-                  fontWeight: isNominal ? FontWeight.bold : FontWeight.normal,
+                  color: isNominal ? Colors.green[700] : Colors.black87,
+                  fontWeight:
+                  isNominal ? FontWeight.bold : FontWeight.normal,
                 ),
               ),
             ],
